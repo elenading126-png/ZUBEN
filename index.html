@@ -92,16 +92,20 @@
   .fch-l .lname{font-size:14.5px;font-weight:700;color:var(--ink);display:block;margin-bottom:2px;}
   .fch-l .lhint{font-size:11.5px;color:var(--muted);line-height:1.4;display:block;}
   .cat-sub{flex:0 0 auto;font-size:13.5px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;background:#F6ECDD;border-radius:8px;padding:4px 10px;white-space:nowrap;}
-  .fund-row{display:flex;align-items:center;gap:8px;margin:8px 0;}
-  .fund-row .enote{flex:1;min-width:0;height:40px;border:1px solid var(--line);background:#FBF7EF;border-radius:9px;padding:0 10px;font-size:13px;color:var(--ink);font-family:inherit;outline:0;}
+  .fund-row{display:flex;flex-direction:column;gap:7px;margin:8px 0;background:#FBF7EF;border:1px solid var(--line);border-radius:11px;padding:10px 12px;box-shadow:0 1px 2px rgba(74,64,54,.03);}
+  .fr-line1{display:flex;gap:8px;align-items:center;}
+  .fr-line2{display:flex;gap:8px;align-items:center;}
+  .fund-row .enote{flex:1;min-width:0;height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:0 10px;font-size:13px;color:var(--ink);font-family:inherit;outline:0;}
   .fund-row .enote:focus{border-color:var(--brand2);background:#FFF6E7;}
-  .fund-row .finput{display:flex;align-items:center;background:#F6ECDD;border:1.5px solid var(--brand2);border-radius:10px;padding:0 10px;min-width:108px;height:40px;}
+  .fund-row .edate{flex:0 0 auto;width:138px;height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;padding:0 8px;font-size:12px;color:var(--ink);font-family:inherit;outline:0;}
+  .fund-row .edate:focus{border-color:var(--brand2);background:#FFF6E7;}
+  .fund-row .finput{flex:1;min-width:0;display:flex;align-items:center;background:#F6ECDD;border:1.5px solid var(--brand2);border-radius:10px;padding:0 10px;height:40px;}
   .fund-row .finput:focus-within{border-color:var(--brand);background:#FFF6E7;}
   .fund-row .finput .yen{font-weight:700;color:var(--brand);margin-right:4px;font-size:14px;}
   .fund-row .finput input{border:0;background:transparent;outline:0;width:100%;font-size:15px;font-weight:600;color:var(--ink);font-family:inherit;-moz-appearance:textfield;}
   .fund-row .finput input::-webkit-outer-spin-button,
   .fund-row .finput input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-  .fund-row .fdel{flex:0 0 auto;width:30px;height:30px;border:none;border-radius:50%;background:#F3E3DC;color:#C0735A;font-size:13px;cursor:pointer;line-height:1;}
+  .fund-row .fdel{flex:0 0 auto;width:34px;height:34px;border:none;border-radius:50%;background:#F3E3DC;color:#C0735A;font-size:13px;cursor:pointer;line-height:1;}
   .fund-row .fdel:active{transform:scale(.9);}
   .fadd{display:block;width:100%;margin-top:6px;height:38px;border:1.5px dashed var(--brand2);background:transparent;color:var(--brand);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
   .fadd:active{background:#FBF1E0;}
@@ -193,10 +197,12 @@
     .note{font-size:12px;padding:7px 10px;margin:10px 0 12px;}
     .fund-cat{padding:10px 11px 12px;}
     .fch-l .lname{font-size:13.5px;}
-    .fund-row{gap:6px;}
-    .fund-row .enote{height:36px;font-size:12.5px;}
-    .fund-row .finput{min-width:92px;height:36px;}
-    .fund-row .fdel{width:28px;height:28px;}
+    .fund-row{gap:6px;padding:9px 10px;}
+    .fr-line1{flex-wrap:wrap;}
+    .fund-row .enote{height:36px;font-size:12.5px;flex:1 1 100%;}
+    .fund-row .edate{height:36px;width:100%;flex:1 1 100%;}
+    .fund-row .finput{height:36px;flex:1 1 auto;}
+    .fund-row .fdel{width:32px;height:32px;}
     .fadd{height:34px;font-size:12.5px;}
     .fund-total{padding:12px 14px;}
     .fund-total .tamt{font-size:18px;}
@@ -747,12 +753,17 @@ function renderMoney(sec){
     }
     arr.forEach((e,idx)=>{
       html+=`<div class="fund-row">
-        <input class="enote" type="text" data-key="${f.key}" data-idx="${idx}" data-field="note" value="${escapeAttr(e.note)}" placeholder="备注，如：直通车">
-        <div class="finput">
-          <span class="yen">¥</span>
-          <input class="eamt" type="number" min="0" step="0.01" inputmode="decimal" data-key="${f.key}" data-idx="${idx}" data-field="amt" value="${(Number(e.amt)||0)||""}" placeholder="0">
+        <div class="fr-line1">
+          <input class="enote" type="text" data-key="${f.key}" data-idx="${idx}" data-field="note" value="${escapeAttr(e.note)}" placeholder="备注，如：直通车">
+          <input class="edate" type="date" data-key="${f.key}" data-idx="${idx}" data-field="date" value="${escapeAttr(e.date)}">
         </div>
-        <button class="fdel" data-key="${f.key}" data-idx="${idx}" title="删除这笔" aria-label="删除">✕</button>
+        <div class="fr-line2">
+          <div class="finput">
+            <span class="yen">¥</span>
+            <input class="eamt" type="number" min="0" step="0.01" inputmode="decimal" data-key="${f.key}" data-idx="${idx}" data-field="amt" value="${(Number(e.amt)||0)||""}" placeholder="0">
+          </div>
+          <button class="fdel" data-key="${f.key}" data-idx="${idx}" title="删除这笔" aria-label="删除">✕</button>
+        </div>
       </div>`;
     });
     html+=`<button class="fadd" data-key="${f.key}">＋ 添加一笔</button>`;
@@ -785,6 +796,7 @@ function bindMoney(){
       const arr=state.cost[k]||[];
       if(!arr[idx]) arr[idx]={note:"",amt:0};
       if(field==="amt"){ arr[idx].amt=parseFloat(inp.value)||0; }
+      else if(field==="date"){ arr[idx].date=inp.value; }
       else { arr[idx].note=inp.value; }
       const sub=document.querySelector(`.cat-sub[data-key="${k}"]`);
       if(sub) sub.textContent="¥"+fmtMoney(catTotal(arr));
@@ -815,7 +827,7 @@ function bindMoney(){
       normalizeCost();
       const k=btn.dataset.key;
       if(!state.cost[k]) state.cost[k]=[];
-      state.cost[k].push({note:"",amt:0});
+      state.cost[k].push({note:"",amt:0,date:todayISO()});
       renderMoneySection();
       save();
       const arr=state.cost[k];
@@ -887,6 +899,7 @@ function render(){
 
 /* ===== 工具：日期串 ===== */
 function dateStr(){const d=new Date();return d.getFullYear()+("0"+(d.getMonth()+1)).slice(-2)+("0"+d.getDate()).slice(-2);}
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
 
 /* ===== 导出：文本（已完成清单） ===== */
 function exportTxt(){
@@ -903,7 +916,7 @@ function exportTxt(){
         const arr=(state.cost&&state.cost[f.key])||[];
         blk.push("  "+f.label+"（小计 ¥"+fmtMoney(catTotal(arr))+"）：");
         if(arr.length===0){ blk.push("    （暂无登记）"); }
-        else { arr.forEach(e=>{ blk.push("    · "+(e.note||"未命名")+"：¥"+fmtMoney(e.amt)); }); }
+        else { arr.forEach(e=>{ blk.push("    · "+(e.date?("["+e.date+"] "):"")+(e.note||"未命名")+"：¥"+fmtMoney(e.amt)); }); }
       });
       blk.push("  ———————————");
       blk.push("  合计：¥"+fmtMoney(totalOf(sec)));
