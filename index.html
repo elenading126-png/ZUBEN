@@ -746,9 +746,12 @@ function verifyToken(tok){
     .then(r=>{ if(!r.ok) throw new Error(r.status===401?"Token 无效或无 gist 权限":("验证失败 "+r.status)); return r.json(); });
 }
 function findGist(){
-  return fetch(GH_API+"/gists?per_page=100",{ headers:ghHeaders() })
-    .then(r=>{ if(!r.ok) throw new Error("获取Gist失败 "+r.status); return r.json(); })
-    .then(list=>{ const g=list.find(x=>x.description===GIST_DESC); return g?g.id:null; });
+  return Promise.race([
+    fetch(GH_API+"/gists?per_page=10",{ headers:ghHeaders() })
+      .then(r=>{ if(!r.ok) throw new Error("获取Gist失败 "+r.status); return r.json(); })
+      .then(list=>{ const g=list.find(x=>x.description===GIST_DESC); return g?g.id:null; }),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error("查找同步仓库超时(15s)，国内网络拉 GitHub 大数据不稳定，请切手机 4G/5G 流量重试，或重新部署本版本后重试")),15000))
+  ]);
 }
 function createGist(){
   return fetch(GH_API+"/gists",{
