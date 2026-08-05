@@ -585,7 +585,8 @@ function idsOf(sec){
   if(sec.timeline){sec.timeline.forEach(t=>t.items.forEach((_,i)=>ids.push(`${sec.id}_${t.m}_${i}`)));}
   else if(sec.cats){sec.cats.forEach(cat=>cat.items.forEach((_,i)=>ids.push(`${sec.id}_${cat.name}_${i}`)));}
   else if(sec.resources){sec.resources.forEach((_,i)=>ids.push(`${sec.id}_res_${i}`));}
-  else{sec.items.forEach((_,i)=>ids.push(`${sec.id}_${i}`));if(sec.livescripts)sec.livescripts.forEach((_,i)=>ids.push(`${sec.id}_话术_${i}`));}
+  else if(sec.money){ /* 金额板块：无勾选项 id */ }
+  else if(sec.items){sec.items.forEach((_,i)=>ids.push(`${sec.id}_${i}`));if(sec.livescripts)sec.livescripts.forEach((_,i)=>ids.push(`${sec.id}_话术_${i}`));}
   return ids;
 }
 function allIds(){let a=[];SECTIONS.forEach(s=>a=a.concat(idsOf(s)));return a;}
