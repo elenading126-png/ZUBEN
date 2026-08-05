@@ -84,6 +84,25 @@
   .item.done .txt{color:var(--muted);text-decoration:line-through;}
   #panel.hide-done .item.done{display:none;}
   #panel.hide-done .script{display:none;}
+  /* ===== 投入金额板块 ===== */
+  .funds{display:flex;flex-direction:column;gap:10px;margin:4px 0 8px;}
+  .fund-row{display:flex;align-items:center;gap:12px;background:#FFFDF8;border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(74,64,54,.04);}
+  .fund-row .flbl{flex:1;min-width:0;}
+  .fund-row .flbl .lname{font-size:14px;font-weight:600;color:var(--ink);display:block;margin-bottom:2px;}
+  .fund-row .flbl .lhint{font-size:11.5px;color:var(--muted);line-height:1.4;}
+  .fund-row .finput{display:flex;align-items:center;background:#F6ECDD;border:1.5px solid var(--brand2);
+    border-radius:10px;padding:0 10px;min-width:130px;height:40px;}
+  .fund-row .finput:focus-within{border-color:var(--brand);background:#FFF6E7;}
+  .fund-row .finput .yen{font-weight:700;color:var(--brand);margin-right:4px;font-size:14px;}
+  .fund-row .finput input{border:0;background:transparent;outline:0;width:100%;font-size:15px;
+    font-weight:600;color:var(--ink);font-family:inherit;-moz-appearance:textfield;}
+  .fund-row .finput input::-webkit-outer-spin-button,
+  .fund-row .finput input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .fund-total{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:14px 16px;
+    background:linear-gradient(135deg,#F6ECDD,#EAD7B8);border-radius:12px;border:1.5px dashed var(--brand2);}
+  .fund-total .tname{font-size:13px;color:var(--ink);font-weight:600;}
+  .fund-total .tamt{font-size:20px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;}
   .scbtn{flex:0 0 auto;font-size:11px;color:var(--blue);background:var(--chip);border:none;border-radius:6px;padding:3px 8px;cursor:pointer;margin-top:1px;transition:.15s;}
   .scbtn:hover{background:#EADFCB;}
   .script{background:#FBF7EF;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin:4px 4px 10px 32px;font-size:13px;}
@@ -165,6 +184,11 @@
     .month{font-size:13.5px;margin:12px 0 6px;}
     .script{margin:4px 4px 10px 24px;font-size:12.5px;padding:10px 12px;}
     .note{font-size:12px;padding:7px 10px;margin:10px 0 12px;}
+    .fund-row{padding:10px 12px;gap:10px;}
+    .fund-row .flbl .lname{font-size:13.5px;}
+    .fund-row .finput{min-width:108px;height:38px;}
+    .fund-total{padding:12px 14px;}
+    .fund-total .tamt{font-size:18px;}
     .foot{font-size:11px;padding:0 0 calc(10px + env(safe-area-inset-bottom));}
   }
 </style>
@@ -229,8 +253,8 @@
 
 <script>
 /* ===== 数据 ===== */
-const ICONS={base:"🧺",season:"🗓️",copy:"📝",brand:"💡",live:"🎙️",supply:"🧵",taoke:"💰"};
-const SHORT={base:"基础",season:"月份",copy:"文案",brand:"品牌",supply:"工厂",taoke:"淘客",live:"直播"};
+const ICONS={base:"🧺",season:"🗓️",copy:"📝",brand:"💡",live:"🎙️",supply:"🧵",taoke:"💰",cost:"💸"};
+const SHORT={base:"基础",season:"月份",copy:"文案",brand:"品牌",supply:"工厂",taoke:"淘客",live:"直播",cost:"投入"};
 const SECTIONS = [
   {
     id:"base", title:"店铺基础建设", tag:"地基优先",
@@ -486,6 +510,16 @@ const SECTIONS = [
       {t:"结尾话术：抽奖+关注领券+下场预告",hook:"（环节目标）沉淀粉丝、预告下场，降低流失。",body:"快下播了，截屏当前画面私信我，抽3位送瑜伽袜！没关注的先点关注，关注店铺领5元复购券，下次直接抵。咱们每周六晚8点固定播，下周六讲怎么挑宝宝袜。点关注不迷路，咱们下周见！",vis:"截屏动作→指关注领券→写'下周六晚8点'纸板",dur:"约3分钟"},
       {t:"异议应对：尺码/起球/发货/退换",hook:"（环节目标）即时答疑，减少跳出和退货。",body:"常见问题我统一答：尺码按正常码选，脚背高选大一码；点胶袜套洗衣袋常温洗不掉胶；纯棉袜冷水洗不易缩；咱们支持七天无理由，质量问题包退。有任何问题公屏扣出来，我逐个回。",vis:"举手机看公屏→逐条指答→比'OK'手势",dur:"穿插全程"}
     ]
+  },
+  {
+    id:"cost", title:"投入金额（目前已花）", tag:"资金",
+    money:true,
+    note:"记录目前累计投入的金额（元）。填了会自动合计，并随进度一起备份 / 云同步。建议每周日打烊时更新一次。",
+    funds:[
+      {key:"toul",  label:"投流",  hint:"直通车 / 引力魔方 / 万相台 / 逛逛等推广花费"},
+      {key:"jinhuo",label:"进货",  hint:"1688 拿货 / 贴牌打样 / 包材等成本"},
+      {key:"taoke", label:"淘客投入", hint:"淘宝客佣金 / 团长服务费 / 鹊桥等"}
+    ]
   }
 ];
 
@@ -499,7 +533,8 @@ const GIST_DESC="ZUBEN TODO state";
 
 function ghHeaders(extra){ return Object.assign({"Authorization":"Bearer "+TOKEN,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}, extra||{}); }
 function loadLocal(){
-  try{ state=JSON.parse(localStorage.getItem("zuben_state")||"{}"); }catch(e){ state={}; }
+  try{ state=JSON.parse(localStorage.getItem("zuben_state")||"{}"); if(!state||typeof state!=="object"||Array.isArray(state)) state={}; }catch(e){ state={}; }
+  if(!state.cost||typeof state.cost!=="object") state.cost={};
   try{ TOKEN=localStorage.getItem("zuben_token")||null; }catch(e){}
   try{ GIST_ID=localStorage.getItem("zuben_gist")||null; }catch(e){}
 }
@@ -562,12 +597,13 @@ function renderNav(){
   SECTIONS.forEach(sec=>{
     const ids=idsOf(sec);
     const done=ids.filter(id=>state[id]).length;
+    const cntText=sec.money?("¥"+fmtMoney(totalOf(sec))):(done+"/"+ids.length);
     const active=sec.id===activeId?" active":"";
     html+=`<div class="nav-item${active}" data-id="${sec.id}">
       <span class="ico"><span class="emo">${ICONS[sec.id]||"📌"}</span></span>
       <span class="lbl">${sec.title}</span>
       <span class="lbls">${SHORT[sec.id]||sec.title}</span>
-      <span class="cnt">${done}/${ids.length}</span>
+      <span class="cnt">${cntText}</span>
     </div>`;
     // 短视频文案库：展开 4 个品类作为子导航
     if(sec.id==="copy" && sec.id===activeId){
@@ -640,6 +676,9 @@ function renderContent(){
     });
   } else if(sec.resources){
     sec.resources.forEach((o,i)=>{body+=resItem(`${sec.id}_res_${i}`,o);});
+  } else if(sec.money){
+    if(!state.cost||typeof state.cost!=="object") state.cost={};
+    body+=renderMoney(sec);
   } else {
     sec.items.forEach((it,i)=>{body+=plainItem(`${sec.id}_${i}`,it);});
     if(sec.livescripts){
@@ -649,10 +688,64 @@ function renderContent(){
   }
   const ids=idsOf(sec);
   const done=ids.filter(id=>state[id]).length;
+  const proText=sec.money?("¥"+fmtMoney(totalOf(sec))):(done+"/"+ids.length);
   panel.innerHTML=`<div class="sec" id="sec_${sec.id}">
-    <h2>${ICONS[sec.id]||"📌"} ${sec.title}<span class="tag">${sec.tag}</span><span class="pro">${done}/${ids.length}</span></h2>
+    <h2>${ICONS[sec.id]||"📌"} ${sec.title}<span class="tag">${sec.tag}</span><span class="pro">${proText}</span></h2>
     <div class="body">${body}</div></div>`;
   bindContent();
+  if(sec.money) bindMoney();
+}
+
+/* ===== 投入金额 ===== */
+function totalOf(sec){
+  if(!sec||!sec.funds) return 0;
+  let t=0;
+  sec.funds.forEach(f=>{ t+=Number((state.cost&&state.cost[f.key])||0)||0; });
+  return t;
+}
+function fmtMoney(n){
+  n=Number(n)||0;
+  return n.toLocaleString("zh-CN",{maximumFractionDigits:2});
+}
+function renderMoney(sec){
+  let html='<div class="funds">';
+  sec.funds.forEach(f=>{
+    const v=Number((state.cost&&state.cost[f.key])||0)||0;
+    html+=`<div class="fund-row">
+      <div class="flbl">
+        <span class="lname">${f.label}</span>
+        <span class="lhint">${f.hint}</span>
+      </div>
+      <div class="finput">
+        <span class="yen">¥</span>
+        <input type="number" min="0" step="0.01" inputmode="decimal" data-key="${f.key}" value="${v||""}" placeholder="0">
+      </div>
+    </div>`;
+  });
+  html+=`<div class="fund-total"><span class="tname">合计投入</span><span class="tamt">¥${fmtMoney(totalOf(sec))}</span></div>`;
+  html+='</div>';
+  return html;
+}
+function bindMoney(){
+  document.querySelectorAll("#panel .fund-row input").forEach(inp=>{
+    inp.addEventListener("input",()=>{
+      if(!state.cost||typeof state.cost!=="object") state.cost={};
+      const k=inp.dataset.key;
+      const v=parseFloat(inp.value);
+      state.cost[k]=isNaN(v)?0:v;
+      // 实时刷新合计行 + 导航 + 顶部进度
+      const sec=SECTIONS.find(s=>s.id===activeId);
+      if(sec){
+        const tot=document.querySelector(".fund-total .tamt");
+        if(tot) tot.textContent="¥"+fmtMoney(totalOf(sec));
+      }
+      const pro=document.querySelector(".sec .pro");
+      if(pro) pro.textContent="¥"+fmtMoney(totalOf(sec));
+      const navEl=document.querySelector(`.nav-item[data-id="${activeId}"] .cnt`);
+      if(navEl) navEl.textContent="¥"+fmtMoney(totalOf(sec));
+      save();
+    });
+  });
 }
 
 function bindContent(){
@@ -684,15 +777,22 @@ function updateProgress(){
   // 刷新导航上的计数
   SECTIONS.forEach(sec=>{
     const navEl=document.querySelector(`.nav-item[data-id="${sec.id}"] .cnt`);
+    if(!navEl) return;
+    if(sec.money){ navEl.textContent="¥"+fmtMoney(totalOf(sec)); return; }
     const si=idsOf(sec);
-    if(navEl) navEl.textContent=`${si.filter(id=>state[id]).length}/${si.length}`;
+    navEl.textContent=`${si.filter(id=>state[id]).length}/${si.length}`;
   });
   // 当前内容区的头部计数
   const sec=SECTIONS.find(s=>s.id===activeId);
   if(sec){
     const pro=document.querySelector(".sec .pro");
-    const si=idsOf(sec);
-    if(pro) pro.textContent=`${si.filter(id=>state[id]).length}/${si.length}`;
+    if(pro){
+      if(sec.money){ pro.textContent="¥"+fmtMoney(totalOf(sec)); }
+      else{
+        const si=idsOf(sec);
+        pro.textContent=`${si.filter(id=>state[id]).length}/${si.length}`;
+      }
+    }
   }
 }
 
@@ -720,6 +820,11 @@ function exportTxt(){
     else if(sec.cats){sec.cats.forEach(cat=>{cat.items.forEach((o,i)=>{if(state[sec.id+"_"+cat.name+"_"+i]){blk.push("  ✓ "+o.t);any=true;}});});}
     else if(sec.resources){
       sec.resources.forEach((o,i)=>{if(state[sec.id+"_res_"+i]){blk.push("  ✓ "+o.name+"｜"+o.cat);any=true;}});
+    } else if(sec.money){
+      sec.funds.forEach(f=>{ blk.push("  "+f.label+"：¥"+fmtMoney((state.cost&&state.cost[f.key])||0)); });
+      blk.push("  ———————————");
+      blk.push("  合计：¥"+fmtMoney(totalOf(sec)));
+      any=true;
     } else{
       sec.items.forEach((it,i)=>{if(state[sec.id+"_"+i]){blk.push("  ✓ "+it);any=true;}});
       if(sec.livescripts)sec.livescripts.forEach((o,i)=>{if(state[sec.id+"_话术_"+i]){blk.push("  ✓ "+o.t);any=true;}});
@@ -746,12 +851,19 @@ function exportImg(){
   x.fillStyle="#2f9e6f";x.fillRect(160,96,560*(total?done/total:0),16);
   let y=150;
   SECTIONS.forEach(sec=>{
-    const si=idsOf(sec);const sd=si.filter(id=>state[id]).length;
+    const si=idsOf(sec);
+    const isMoney=!!sec.money;
+    const sd=si.filter(id=>state[id]).length;
+    const valueText=isMoney?("¥"+fmtMoney(totalOf(sec))):(sd+" / "+si.length);
     x.fillStyle="#1f2933";x.font="15px sans-serif";
     x.fillText((ICONS[sec.id]||"📌")+" "+sec.title,24,y);
-    x.fillStyle="#6b7785";x.font="14px sans-serif";x.fillText(sd+" / "+si.length,620,y);
+    x.fillStyle="#6b7785";x.font="14px sans-serif";
+    x.fillText(valueText,isMoney?580:620,y);
     x.fillStyle="#eef2f7";x.fillRect(24,y+12,640,8);
-    x.fillStyle="#e8704a";x.fillRect(24,y+12,640*(si.length?sd/si.length:0),8);
+    if(!isMoney){
+      x.fillStyle="#e8704a";
+      x.fillRect(24,y+12,640*(si.length?sd/si.length:0),8);
+    }
     y+=60;
   });
   const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="袜子店TODO进度_"+dateStr()+".png";a.click();
