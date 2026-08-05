@@ -742,8 +742,11 @@ function setSync(status,msg){
   if(txt) txt.textContent=msg||({ok:"已同步",busy:"同步中…",err:"同步失败"}[status]||"未同步");
 }
 function verifyToken(tok){
-  return fetch(GH_API+"/user",{ headers:{"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"} })
-    .then(r=>{ if(!r.ok) throw new Error(r.status===401?"Token 无效或无 gist 权限":("验证失败 "+r.status)); return r.json(); });
+  return Promise.race([
+    fetch(GH_API+"/user",{ headers:{"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"} })
+      .then(r=>{ if(!r.ok) throw new Error(r.status===401?"Token 无效或无 gist 权限":("验证失败 "+r.status)); return r.json(); }),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error("验证超时(10s)：iOS 把网页装成 App 后，内部请求 GitHub 常发不出去。请用手机 Safari 普通标签页(不要装App)打开本网址登录；或切 4G/5G 流量重试")),10000))
+  ]);
 }
 function findGist(){
   return Promise.race([
