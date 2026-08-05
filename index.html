@@ -84,7 +84,7 @@
   .foot{margin-top:24px;text-align:center;font-size:12px;color:var(--muted);}
 
   /* ===== 登录层（全局：修复原媒体查询 bug） ===== */
-  .login-mask{position:fixed;inset:0;background:linear-gradient(135deg,#e8704a,#f4a261);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .login-mask{position:fixed;inset:0;background:linear-gradient(135deg,#e8704a,#f4a261);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}\n  .login-mask.show{display:flex;}
   .login-card{background:#fff;border-radius:16px;padding:28px 26px;width:340px;max-width:100%;box-shadow:0 12px 40px rgba(0,0,0,.2);}
   .login-card h2{margin:0 0 4px;font-size:20px;color:var(--ink);}
   .login-card .sub{font-size:12px;color:var(--muted);margin:0 0 16px;}
@@ -146,8 +146,8 @@
 <body>
   <div id="login" class="login-mask">
     <div class="login-card">
-      <h2 id="loginTitle">登录 ZUBEN</h2>
-      <p class="sub">GitHub 同步 · 公司/家里电脑自动同步 · 数据存你自己的私有 Gist</p>
+      <h2 id="loginTitle">开启云同步（可选）</h2>
+      <p class="sub">开启后手机/电脑自动同步进度，仅需配置一次，数据存在你自己的 GitHub 私有 Gist。不想用直接关闭，进度仍存本机。</p>
       <form id="loginForm" autocomplete="on">
         <label for="token">GitHub 个人访问令牌 (Token)</label>
         <input id="token" type="password" placeholder="ghp_... 或 github_pat_..." required>
@@ -160,13 +160,13 @@
             4. 拉到底 <b>Generate token</b> → 复制那串 <b>ghp_...</b> 粘到上面
           </div>
         </details>
-        <button class="login-btn" id="loginSubmit" type="submit">登录并同步</button>
+        <button class="login-btn" id="loginSubmit" type="submit">开启同步</button>
       </form>
       <div class="login-msg" id="loginMsg"></div>
-      <p class="sub" style="margin-top:14px;font-size:11px;opacity:.85;">提示：Token 仅保存在你本机浏览器，不会上传给任何第三方。建议只用「只勾了 gist 权限」的令牌。</p>
+      <p class="sub" style="margin-top:14px;font-size:11px;opacity:.85;">提示：Token 仅保存在你本机浏览器，不会上传给任何第三方。建议只用「只勾了 gist 权限」的令牌。<br><a href="#" id="closeSync" style="color:var(--brand);text-decoration:underline;">暂不开启，直接用</a></p>
     </div>
   </div>
-<div class="wrap" id="main" hidden>
+<div class="wrap" id="main">
   <header class="top">
     <h1><span class="logo-badge">🧦</span> ZUBEN · 袜子店运营 TODO 总清单</h1>
     <p>副业单人版 · 按季节/月份/品类整理 · 点左侧大类查看对应事项，点任一条标记完成，进度自动保存。短视频文案已扩为 20–30 秒完整口播脚本（点「脚本」展开）。</p>
@@ -188,15 +188,18 @@
         <button class="btn" id="exportImg">导出图片</button>
         <button class="btn" id="exportTxt">导出文本</button>
         <button class="btn" id="resetBtn">重置进度</button>
-        <span class="syncbar"><span class="dot" id="syncDot"></span><span id="syncTxt">未同步</span></span>
-        <button class="btn" id="syncBtn">立即同步</button>
-        <button class="btn" id="logoutBtn">退出登录</button>
+        <span class="syncbar"><span class="dot" id="syncDot"></span><span id="syncTxt">未开启同步</span></span>
+        <button class="btn" id="syncBtn">云同步</button>
+        <button class="btn" id="exportState">导出进度</button>
+        <button class="btn" id="importState">导入进度</button>
+        <button class="btn" id="logoutBtn">退出同步</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
       </div>
       <div id="panel"></div>
     </main>
   </div>
 
-  <div class="foot">数据通过 GitHub 私有 Gist 同步 · 公司/家里电脑登录同一 Token 即可自动同步 · 建议定期用「导出文本」备份一份</div>
+  <div class="foot">进度自动存本机；点「云同步」可开启手机/电脑自动同步（存在你的 GitHub 私有 Gist）；也可用「导出进度」备份一份发给另一台设备导入。</div>
 </div>
 
 <script>
@@ -730,6 +733,24 @@ function exportImg(){
 }
 
 document.getElementById("onlyUndone").addEventListener("change",e=>{onlyUndone=e.target.checked;document.getElementById("panel").classList.toggle("hide-done",onlyUndone);});
+function exportState(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ZUBEN-进度备份.json";a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function importState(e){
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);
+      Object.keys(data).forEach(k=>{ if(data[k]) state[k]=true; });
+      saveLocal(); render();
+      alert("进度已导入（已完成项已合并，不会丢失已有勾选）");
+    }catch(err){ alert("导入失败：文件格式不对"); }
+  };
+  r.readAsText(f); e.target.value="";
+}
 document.getElementById("exportImg").addEventListener("click",exportImg);
 document.getElementById("exportTxt").addEventListener("click",exportTxt);
 
@@ -776,14 +797,31 @@ function doLogin(tok){
   }).then(()=>{
     try{ localStorage.setItem("zuben_token",TOKEN); localStorage.setItem("zuben_gist",GIST_ID); }catch(e){}
     msg.textContent="";
+    closeSync();
     setSync("busy","同步中…");
     return pullGist().then(()=>{ saveLocal(); render(); setSync("ok"); });
-  }).then(()=>{ showApp(); })
-    .catch(err=>{ msg.textContent="登录失败："+(err.message||err); TOKEN=null; });
+  }).catch(err=>{ msg.textContent="开启失败："+(err.message||err); TOKEN=null; });
 }
 
-function initGitHub(){
+function openSync(){ document.getElementById("login").classList.add("show"); document.getElementById("loginMsg").textContent=""; }
+function closeSync(){ const m=document.getElementById("login"); if(m)m.classList.remove("show"); }
+
+function initApp(){
   loadLocal();
+  document.getElementById("main").hidden=false;
+  closeSync();
+  render();
+  // 云同步按钮：打开可选同步面板
+  document.getElementById("syncBtn").onclick=openSync;
+  const cf=document.getElementById("closeSync"); if(cf) cf.onclick=(e)=>{ e.preventDefault(); closeSync(); };
+  // 退出同步
+  const lb=document.getElementById("logoutBtn");
+  if(lb) lb.onclick=()=>{
+    TOKEN=null; GIST_ID=null;
+    try{ localStorage.removeItem("zuben_token"); localStorage.removeItem("zuben_gist"); }catch(e){}
+    setSync("","未开启同步"); closeSync();
+  };
+  // 提交 Token 开启同步
   const form=document.getElementById("loginForm");
   form.addEventListener("submit",e=>{
     e.preventDefault();
@@ -791,30 +829,20 @@ function initGitHub(){
     if(!tok){ document.getElementById("loginMsg").textContent="请输入 Token"; return; }
     doLogin(tok);
   });
-  const lb=document.getElementById("logoutBtn");
-  if(lb) lb.onclick=()=>{
-    TOKEN=null; GIST_ID=null;
-    try{ localStorage.removeItem("zuben_token"); localStorage.removeItem("zuben_gist"); }catch(e){}
-    setSync(""); showLogin();
-  };
-  const sb=document.getElementById("syncBtn");
-  if(sb) sb.onclick=()=>{
-    if(!TOKEN||!GIST_ID){ setSync("err","请先登录"); return; }
-    setSync("busy","同步中…");
-    pullGist().then(()=>{ render(); return pushGist(); }).then(()=>setSync("ok")).catch(()=>{});
-  };
+  // 导出/导入进度（手动跨设备）
+  document.getElementById("exportState").onclick=exportState;
+  document.getElementById("importState").onclick=()=>document.getElementById("importFile").click();
+  document.getElementById("importFile").onchange=importState;
+  // 若以前开过同步，后台静默拉一次（不阻塞使用）
   if(TOKEN&&GIST_ID){
     setSync("busy","同步中…");
-    pullGist().then(()=>{ saveLocal(); render(); setSync("ok"); showApp(); })
-      .catch(()=>{ setSync("err","同步失败，请重新登录"); showLogin(); });
+    pullGist().then(()=>{ saveLocal(); render(); setSync("ok"); })
+      .catch(()=>{ setSync("err","云同步失败，点「云同步」重试"); });
   } else {
-    showLogin();
+    setSync("","未开启同步");
   }
 }
-if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
-  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
-}
-initGitHub();
+initApp();
 </script>
 </body>
 </html>
