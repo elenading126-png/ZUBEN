@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#e8704a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ZUBEN">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<title>ZUBEN · 袜子店运营 TODO 总清单</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1f2933; --muted:#6b7785;
+    --line:#e3e8ef; --brand:#e8704a; --brand2:#f4a261; --ok:#2f9e6f;
+    --blue:#3b82c4; --chip:#eef2f7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px;}
+  header.top{background:linear-gradient(135deg,#e8704a,#f4a261);color:#fff;border-radius:16px;
+    padding:22px 24px;box-shadow:0 6px 18px rgba(232,112,74,.25);}
+  header.top h1{margin:0 0 4px;font-size:22px;display:flex;align-items:center;}
+  .logo-badge{display:inline-flex;width:36px;height:36px;background:#fff;border-radius:50%;align-items:center;justify-content:center;margin-right:10px;flex:0 0 auto;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .logo-badge{font-size:22px;}
+  header.top p{margin:0;opacity:.95;font-size:13px;}
+  .bar{margin-top:14px;background:rgba(255,255,255,.3);border-radius:999px;height:12px;overflow:hidden;}
+  .bar>span{display:block;height:100%;background:#fff;width:0;transition:width .3s;}
+  .bartxt{margin-top:6px;font-size:12px;opacity:.95;}
+
+  .layout{display:flex;gap:18px;align-items:flex-start;margin-top:18px;}
+  .sidebar{flex:0 0 224px;position:sticky;top:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:12px;max-height:calc(100vh - 40px);overflow:auto;}
+  .side-title{font-size:12px;color:var(--muted);padding:2px 8px 8px;letter-spacing:1px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;
+    margin-bottom:4px;user-select:none;transition:.15s;}
+  .nav-item:hover{background:#f7f9fc;}
+  .nav-item.active{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(232,112,74,.3);}
+  .nav-item .ico{flex:0 0 22px;width:22px;text-align:center;font-size:18px;}
+  .nav-item .lbl{flex:1;font-size:13.5px;font-weight:600;line-height:1.3;}
+  .nav-item .cnt{font-size:11px;opacity:.9;background:rgba(0,0,0,.08);padding:1px 8px;border-radius:999px;white-space:nowrap;}
+  .nav-item.active .cnt{background:rgba(255,255,255,.25);}
+  .subnav{margin:0 0 6px 30px;}
+  .sub-item{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;font-size:12.5px;color:var(--muted);}
+  .sub-item:hover{background:#f7f9fc;color:var(--ink);}
+  .sub-item.active{background:#fdeee7;color:var(--brand);font-weight:600;}
+  .sub-item .dot{flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:#c4ccd6;}
+  .sub-item.active .dot{background:var(--brand);}
+  .sub-item .scnt{margin-left:auto;font-size:11px;opacity:.85;}
+
+  .content{flex:1;min-width:0;}
+  .toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px;}
+  .btn{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;color:var(--muted);}
+  .btn:hover{border-color:var(--brand);color:var(--brand);}
+
+  .sec{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .sec>h2{margin:0;padding:16px 18px;font-size:17px;display:flex;align-items:center;gap:10px;background:#fbfcfe;}
+  .sec>h2 .tag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);margin-left:4px;}
+  .sec>h2 .pro{margin-left:auto;font-size:12px;color:var(--muted);}
+  .body{padding:6px 18px 18px;}
+  .note{font-size:12.5px;color:var(--muted);background:#fff8f3;border-left:3px solid var(--brand2);
+    padding:8px 12px;border-radius:8px;margin:12px 0 14px;}
+  .month{font-weight:600;color:var(--brand);margin:16px 0 8px;font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:4px;}
+  .cat-h{font-weight:600;color:var(--blue);margin:16px 0 6px;font-size:14px;scroll-margin-top:16px;}
+  ul.list{list-style:none;margin:0;padding:0;}
+  .item{display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-radius:8px;cursor:pointer;}
+  .item:hover{background:#f7f9fc;}
+  .item .box{flex:0 0 18px;width:18px;height:18px;border:2px solid #c4ccd6;border-radius:5px;margin-top:3px;position:relative;transition:.15s;}
+  .item.done .box{background:var(--ok);border-color:var(--ok);}
+  .item.done .box:after{content:"";position:absolute;left:5px;top:1px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+  .item .txt{flex:1;font-size:14px;}
+  .item.done .txt{color:var(--muted);text-decoration:line-through;}
+  #panel.hide-done .item.done{display:none;}
+  #panel.hide-done .script{display:none;}
+  .scbtn{flex:0 0 auto;font-size:11px;color:var(--blue);background:var(--chip);border:none;border-radius:6px;padding:3px 8px;cursor:pointer;margin-top:1px;}
+  .scbtn:hover{background:#e3eefb;}
+  .script{background:#fbfcfe;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin:4px 4px 10px 32px;font-size:13px;}
+  .script b{color:var(--brand);}
+  .script .vi{color:var(--muted);}
+  .script .du{display:inline-block;font-size:11px;color:var(--ok);background:#eafaf2;padding:1px 8px;border-radius:999px;margin-bottom:6px;}
+  .foot{margin-top:24px;text-align:center;font-size:12px;color:var(--muted);}
+
+  /* ===== 登录层（全局：修复原媒体查询 bug） ===== */
+  .login-mask{position:fixed;inset:0;background:linear-gradient(135deg,#e8704a,#f4a261);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .login-card{background:#fff;border-radius:16px;padding:28px 26px;width:340px;max-width:100%;box-shadow:0 12px 40px rgba(0,0,0,.2);}
+  .login-card h2{margin:0 0 4px;font-size:20px;color:var(--ink);}
+  .login-card .sub{font-size:12px;color:var(--muted);margin:0 0 16px;}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;}
+  .tab{flex:1;text-align:center;padding:8px;border-radius:8px;background:var(--chip);color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;}
+  .tab.active{background:var(--brand);color:#fff;}
+  .login-card label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px;}
+  .login-card input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;box-sizing:border-box;}
+  .login-card input:focus{outline:none;border-color:var(--brand);}
+  .login-btn{width:100%;margin-top:16px;background:var(--brand);color:#fff;border:none;border-radius:8px;padding:11px;font-size:15px;font-weight:600;cursor:pointer;}
+  .login-btn:hover{background:#d8603a;}
+  .login-msg{margin-top:12px;font-size:12.5px;color:#c0392b;min-height:18px;text-align:center;line-height:1.4;}
+  #logoutBtn{margin-left:auto;}
+  /* 同步状态（全局） */
+  .syncbar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-left:4px;}
+  .syncbar .dot{width:8px;height:8px;border-radius:50%;background:#c4ccd6;}
+  .syncbar .dot.ok{background:var(--ok);}
+  .syncbar .dot.busy{background:var(--brand2);}
+  .syncbar .dot.err{background:#c0392b;}
+  /* 桌面隐藏短标签 */
+  .nav-item .lbls{display:none;}
+
+  /* ===== 手机 App 布局（≤820px：底部标签栏） ===== */
+  @media(max-width:820px){
+    .wrap{padding:14px 12px calc(90px + env(safe-area-inset-bottom));}
+    header.top{padding:16px 16px;border-radius:14px;}
+    header.top h1{font-size:19px;}
+    header.top p{font-size:12px;}
+    .layout{display:block;}
+    .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;max-height:none;flex:none;
+      display:flex;gap:2px;overflow-x:auto;background:var(--card);border-top:1px solid var(--line);
+      border-radius:0;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:40;
+      box-shadow:0 -4px 16px rgba(0,0,0,.06);}
+    .side-title{display:none;}
+    .nav-item{flex:1 1 0;min-width:0;flex-direction:column;gap:2px;padding:6px 2px;margin-bottom:0;justify-content:center;text-align:center;border-radius:10px;position:relative;}
+    .nav-item .ico{font-size:21px;flex:none;width:auto;}
+    .nav-item .lbl{display:none;}
+    .nav-item .lbls{display:block;font-size:10.5px;font-weight:600;line-height:1.1;color:var(--muted);}
+    .nav-item.active{box-shadow:none;}
+    .nav-item.active .lbls{color:#fff;}
+    .nav-item .cnt{position:absolute;top:2px;right:6px;font-size:9px;background:rgba(0,0,0,.12);padding:0 5px;border-radius:999px;min-width:18px;line-height:14px;}
+    .nav-item.active .cnt{background:rgba(255,255,255,.3);color:#fff;}
+    .subnav{margin:10px 0 4px;display:flex;gap:8px;overflow-x:auto;padding:4px 2px;white-space:nowrap;}
+    .subnav .sub-item{margin-bottom:0;white-space:nowrap;background:var(--chip);border-radius:999px;padding:6px 12px;font-size:12px;}
+    .subnav .sub-item.active{background:var(--brand);color:#fff;}
+    .subnav .sub-item .dot{display:none;}
+    .subnav .sub-item .scnt{margin-left:6px;opacity:.85;}
+    .content{display:block;}
+    .toolbar{position:sticky;top:0;background:var(--bg);z-index:30;flex-wrap:wrap;gap:6px;padding:8px 0;margin-bottom:8px;border-bottom:1px solid var(--line);}
+    .toolbar .btn{padding:5px 10px;font-size:11.5px;}
+    #panel{padding-bottom:6px;}
+    .item{padding:12px 6px;}
+    .item .txt{font-size:15px;}
+    .sec>h2{font-size:16px;padding:14px 16px;}
+    .cat-h{scroll-margin-top:80px;}
+  }
+</style>
+</head>
+<body>
+  <div id="login" class="login-mask">
+    <div class="login-card">
+      <h2 id="loginTitle">登录 ZUBEN</h2>
+      <p class="sub">GitHub 同步 · 公司/家里电脑自动同步 · 数据存你自己的私有 Gist</p>
+      <form id="loginForm" autocomplete="on">
+        <label for="token">GitHub 个人访问令牌 (Token)</label>
+        <input id="token" type="password" placeholder="ghp_... 或 github_pat_..." required>
+        <details style="margin-top:10px;font-size:12px;color:var(--muted);">
+          <summary style="cursor:pointer;">如何获取 Token？（免费，约 30 秒）</summary>
+          <div style="margin-top:8px;line-height:1.7;">
+            1. 打开 github.com → 右上角头像 → <b>Settings</b><br>
+            2. 左侧最下方 <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Tokens (classic)</b><br>
+            3. <b>Generate new token (classic)</b> → Note 填 zuben → 勾选 <b>gist</b> 权限 → 过期时间建议设 1 年或无<br>
+            4. 拉到底 <b>Generate token</b> → 复制那串 <b>ghp_...</b> 粘到上面
+          </div>
+        </details>
+        <button class="login-btn" id="loginSubmit" type="submit">登录并同步</button>
+      </form>
+      <div class="login-msg" id="loginMsg"></div>
+      <p class="sub" style="margin-top:14px;font-size:11px;opacity:.85;">提示：Token 仅保存在你本机浏览器，不会上传给任何第三方。建议只用「只勾了 gist 权限」的令牌。</p>
+    </div>
+  </div>
+<div class="wrap" id="main" hidden>
+  <header class="top">
+    <h1><span class="logo-badge">🧦</span> ZUBEN · 袜子店运营 TODO 总清单</h1>
+    <p>副业单人版 · 按季节/月份/品类整理 · 点左侧大类查看对应事项，点任一条标记完成，进度自动保存。短视频文案已扩为 20–30 秒完整口播脚本（点「脚本」展开）。</p>
+    <div class="bar"><span id="barFill"></span></div>
+    <div class="bartxt" id="barTxt">已完成 0 / 0</div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="side-title">📋 大类导航</div>
+      <div id="nav"></div>
+    </aside>
+
+    <main class="content">
+      <div class="toolbar">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;">
+          <input type="checkbox" id="onlyUndone"> 只看未完成
+        </label>
+        <button class="btn" id="exportImg">导出图片</button>
+        <button class="btn" id="exportTxt">导出文本</button>
+        <button class="btn" id="resetBtn">重置进度</button>
+        <span class="syncbar"><span class="dot" id="syncDot"></span><span id="syncTxt">未同步</span></span>
+        <button class="btn" id="syncBtn">立即同步</button>
+        <button class="btn" id="logoutBtn">退出登录</button>
+      </div>
+      <div id="panel"></div>
+    </main>
+  </div>
+
+  <div class="foot">数据通过 GitHub 私有 Gist 同步 · 公司/家里电脑登录同一 Token 即可自动同步 · 建议定期用「导出文本」备份一份</div>
+</div>
+
+<script>
+/* ===== 数据 ===== */
+const ICONS={base:"🛠️",season:"📅",copy:"🎬",brand:"🏷️",live:"📺",supply:"🏭",taoke:"🤝"};
+const SHORT={base:"基础",season:"月份",copy:"文案",brand:"品牌",supply:"工厂",taoke:"淘客",live:"直播"};
+const SECTIONS = [
+  {
+    id:"base", title:"店铺基础建设", tag:"地基优先",
+    note:"付费前必须先修好转化地基，否则投流必亏。顺序不能反。（建议 2026 年 8 月前 2 周完成）",
+    items:[
+      "重做三款产品主图（各4-5张测试图：场景/卖点/对比）",
+      "详情页改为场景化（瑜伽/通勤/保暖场景代入，不堆参数）",
+      "用淘宝客高佣+朋友圈冲首批 30-50 单真实成交",
+      "引导首批买家晒图，破除 0 评价信任墙",
+      "设计合规包裹卡（关注领券/晒图抽奖，禁用好评返现）",
+      "自问自答填充 问大家 板块，铺常见疑虑",
+      "先买样自检三款袜子品质，避免差评反噬",
+      "确定店铺定位口号：足部舒适专家（无骨/不勒/真舒服）"
+    ]
+  },
+  {
+    id:"season", title:"按月/季节上架节点", tag:"节奏",
+    note:"袜子强季节属性，按节点提前 1 个月准备素材与上架。当前为 2026 年 8 月（夏末）。",
+    timeline:[
+      {m:"2026.08 夏末", items:[
+        "主推：纯棉薄款/船袜 + 瑜伽普拉提袜（常年款）",
+        "准备秋冬羊毛袜上架素材（拍摄/详情/文案）",
+        "开启直通车长尾词（日预算100-150，只看CTR+加购）"
+      ]},
+      {m:"2026.09 初秋", items:[
+        "上架/预热：二趾羊毛袜（秋冬羊毛袜）",
+        "纯棉无骨袜作为日常主推线持续发内容",
+        "逛逛每周 3-5 条短视频，挂商品链定时发"
+      ]},
+      {m:"2026.10 秋", items:[
+        "秋冬羊毛袜正式主推，双11 预热开始",
+        "组合装（瑜伽+无骨+羊毛）上架拉客单价",
+        "私域群开始运营，复购券/会员权益发放"
+      ]},
+      {m:"2026.11 冬初", items:[
+        "双11 大促：羊毛袜 peak，设满减/第二件半价",
+        "双12 预热，囤羊毛袜话题内容",
+        "直播尝试：周末 1 场（可选）"
+      ]},
+      {m:"2026.12 隆冬", items:[
+        "双12 + 年货节，羊毛袜 peak 延续",
+        "礼盒装包装上线，冲送礼场景",
+        "复盘年度单位经济（毛利×复购 vs CAC）"
+      ]},
+      {m:"2027.01-02 深冬/年货", items:[
+        "冬季款延续销售，清尾不压货",
+        "规划春季新品（浅色纯棉无骨袜/船袜）"
+      ]},
+      {m:"2027.03-05 春季", items:[
+        "主推：纯棉无骨袜 / 纯棉袜（日常通勤）",
+        "换季清羊毛袜（反季优惠），回笼资金",
+        "小红书春季穿搭种草加大投放"
+      ]},
+      {m:"2027.06-08 夏季", items:[
+        "主推：纯棉薄款/船袜 + 瑜伽普拉提袜（常年）",
+        "二趾羊毛袜下架或反季清仓",
+        "复盘并制定下一年季节性货盘"
+      ]}
+    ]
+  },
+  {
+    id:"copy", title:"短视频文案库", tag:"内容",
+    note:"周六半天集中拍 + 剪映批量出片 + 定时发布。点每条右侧「脚本」展开完整口播（钩子+正文+画面+时长）。勾选代表该条已拍已发。",
+    cats:[
+      {name:"纯棉袜（日常/薄款/船袜）", items:[
+        {t:"夏天脚汗多？这双纯棉袜吸汗不臭脚",hook:"夏天脚汗多、脱鞋尴尬？别急，问题可能出在袜子上。",body:"这双纯棉袜用的是精梳棉，纤维更长更密，吸汗速度比普通袜快一截。脚心出汗它先吸住，表面还透气，不容易闷出味道。我连续穿了三天通勤，晚上脱鞋基本没异味。夏天怕脚臭的，闭眼入这双。",vis:"脚穿袜特写→对比干爽鞋垫→博主点头",dur:"28秒"},
+        {t:"船袜总掉跟？这双后跟加胶让你跑跳不掉",hook:"船袜最烦什么？走着走着掉到脚心对不对。",body:"这双在后跟内侧加了一圈软点胶，穿上像小手抓住脚后跟，慢跑、赶地铁都不掉。胶是软的，不硌不痒。配浅口鞋、乐福鞋刚刚好，露出脚踝还显腿长。再也不用边走边提袜子了。",vis:"走动演示掉跟vs点胶袜稳固→特写后跟胶",dur:"27秒"},
+        {t:"纯棉袜洗几次就破洞？看这双的加固袜尖",hook:"袜子最容易破的是哪里？脚趾尖对吧，今天给你看加固款。",body:"普通袜脚趾就一层布，顶一个月就破。这双在袜头和袜跟都做了双线加固，同样天天穿，洗了十几次还没起薄。脚指甲硬、爱顶脚尖的男生尤其适合。一双耐穿，算下来更省钱。",vis:"手指搓袜尖→对比普通袜薄处→弯折测试",dur:"27秒"},
+        {t:"脚容易臭的男生，这双棉袜我爸穿了说行",hook:"给家里男士买袜的，这条一定要看。",body:"我爸脚汗重，以前袜子一天一换还有味。换这双精梳棉之后，他说透气多了，傍晚脱鞋没那么冲。关键是袜底有透气网眼，不闷汗。男士袜不用花哨，舒服耐穿就赢。",vis:"叠放男士袜→脚穿袜走动→博主对镜头说",dur:"26秒"},
+        {t:"浅口鞋配什么袜？隐形船袜教程",hook:"穿浅口鞋露袜边很尴尬？教你选对隐形船袜。",body:"选船袜看三点：后跟有胶防掉、袜口低于鞋沿、脚背够薄不鼓包。这双穿上鞋沿外完全看不见，走在太阳下也不露边。配小白鞋、奶奶鞋都干净。夏天想露脚踝的姐妹必入。",vis:"上脚对比露边vs隐形→搭配不同鞋",dur:"28秒"},
+        {t:"纯棉不等于100%棉，教你一眼看成分表",hook:"标着纯棉就真的是纯棉？教你一眼识破。",body:"真正舒服的袜一般是棉加少量氨纶，氨纶管弹性。如果成分表里棉低于65%，基本就是化纤感、不吸汗。这双含棉量标得清清楚楚，摸上去软糯不滑手。买袜先翻成分表，别被纯棉两个字骗了。",vis:"镜头拍吊牌成分→手指摸质感→放大",dur:"29秒"},
+        {t:"运动完脱鞋尴尬？这双棉袜透气性实测",hook:"健身完脱鞋，旁边人后退两步？试试透气款。",body:"这双在脚背做了透气网眼区，运动后脚心是干爽的，不是湿哒哒黏鞋。我撸铁一小时测试，脱鞋基本没味道。健身包里常备两双换着穿，卫生也体面。",vis:"健身房场景→脱鞋嗅一闻→网眼特写",dur:"26秒"},
+        {t:"孩子上学穿什么袜？纯棉中筒不闷脚",hook:"给孩子买袜，别只看图案好看。",body:"小朋友跑跳一天，脚汗比大人多。这双中筒纯棉，袜口是宽罗纹不勒小腿，脚底透气不闷。图案是活性印染，洗了不硬不掉的。上学穿一天，回家脚还是干爽的。",vis:"儿童袜摆拍→孩子脚穿走动→洗后展示",dur:"27秒"},
+        {t:"袜口松了就废了？这双高弹罗纹穿半年",hook:"袜子不是穿破的，是袜口松了就扔的对吧。",body:"这双用的是高弹包芯纱罗纹，我穿了快半年，袜口还是紧紧贴合不下滑。关键洗完不卷边、不松垮。一双能顶普通袜两三双的寿命，算下来真不贵。",vis:"拉伸袜口回弹演示→穿半年对比新袜",dur:"26秒"},
+        {t:"夏天通勤穿皮鞋，这双薄棉袜不闷汗",hook:"夏天穿皮鞋脚像蒸桑拿？换双薄棉袜。",body:"这双是薄款精梳棉，厚度比普通袜薄三分之一，贴合皮鞋不鼓包。脚心有吸汗层，一天通勤下来不黏脚。西装革履的打工人，脚舒服了整天心情都好。",vis:"穿皮鞋上脚→薄厚对比→午后干爽展示",dur:"27秒"},
+        {t:"纯棉袜起球正常吗？教你分清好坏棉",hook:"袜子起球就是质量差？不一定，今天说清楚。",body:"轻微起球多是摩擦正常损耗，但一穿就成毛球团，那是短纤劣质棉。这双用的是精梳长纤棉，把短茸毛提前梳掉了，穿几次基本不起球。买之前看工艺，比看价格重要。",vis:"起球对比→精梳棉特写→摩擦测试",dur:"28秒"},
+        {t:"情侣同款棉袜，一对才一杯奶茶钱",hook:"想和对象穿同款又不想土？看这双。",body:"中性纯色设计，男女都能穿，灰白黑三色随便搭。材质是透气精梳棉，不臭脚不勒脚。一对算下来一杯奶茶钱，纪念日随手送也不心疼。小确幸就这么简单。",vis:"两双并排→情侣脚同框→价格牌",dur:"25秒"},
+        {t:"脚背容易勒痕？这双宽袜口实测",hook:"袜子脱下来脚背一道红印？那是袜口太紧了。",body:"这双特意把袜口做宽、用高弹纱，压力分散不勒肉。我脚背偏厚，穿一天下来几乎没有印子。容易水肿、久坐的姐妹选袜先看袜口，别跟自己过不去。",vis:"脚背红印对比→宽袜口上脚→按压",dur:"27秒"},
+        {t:"出差带几双袜？这双可机洗快干",hook:"出差最怕袜子洗了不干？带这双就够。",body:"这双薄棉快干，晚上手洗挂在浴室，第二天早上基本干透。机洗也没问题，不变形不缩水。出差带三双轮换，行李轻一半。经常跑外的朋友真的需要。",vis:"行李箱摆袜→水洗悬挂→次日干爽",dur:"26秒"},
+        {t:"纯棉袜缩水？水温这个小细节很多人错",hook:"新袜洗一次就变小？多半是水温错了。",body:"纯棉怕热水，四十度以上容易缩。这双我特意冷水手洗测试，三次下来几乎没缩。建议大家袜子类都冷水洗、平铺晾。细节做对，袜子寿命翻倍。",vis:"温度计示意→冷水洗→对比尺寸",dur:"27秒"},
+        {t:"白袜发黄洗不白？三个小妙招",hook:"白袜穿成黄袜？三个妙招救回来。",body:"第一，泡温水加小苏打半小时；第二，别和深色混洗；第三，别暴晒，阴干保白。这双白袜我按这方法洗了一个月还挺白。护理比猛搓更管用。",vis:"黄白对比→浸泡演示→晾晒",dur:"28秒"},
+        {t:"健身房更衣室社死？自带棉袜更卫生",hook:"健身房更衣室光脚走？卫生隐患真的别忽视。",body:"公共区域细菌多，自带一双干净棉袜替换最安心。这双薄款好收纳，塞健身包不占地方，透气不闷。对自己好一点，从一双袜开始。",vis:"健身包取袜→更衣场景→上脚",dur:"25秒"},
+        {t:"纯棉袜为什么比化纤舒服？显微镜下看纤维",hook:"同样是袜，纯棉和化纤差在哪？显微镜下见真章。",body:"纯棉纤维是中空管状，能吸汗透气；化纤是实心塑料感，汗闷在表面。这双放大看纤维蓬松有空隙，脚就像会呼吸。贵几块钱，舒服的是一个档次。",vis:"微距/示意纤维→脚穿着透气→对比",dur:"29秒"},
+        {t:"学生党性价比袜，三双组合装更划算",hook:"学生党袜子怎么买不踩坑？听我一句。",body:"单买一双贵，三双组合装摊下来最划算。这双是纯棉耐穿款，宿舍机洗不变形。备三四双轮换，一周不用愁。省钱又舒服，学生党的刚需。",vis:"组合装摆拍→宿舍场景→价格牌",dur:"25秒"},
+        {t:"脚汗多还挑食？这双棉袜里层网眼透气",hook:"脚汗多又挑舒服的？这双双层设计刚好。",body:"里层是亲肤精梳棉，外层脚底有网眼透气区，汗快速散掉不积着。我汗脚亲测，穿一天脚心是润而不湿。介意闷脚的，重点看这个双层结构。",vis:"双层剖视→网眼特写→脚穿走动",dur:"27秒"},
+        {t:"夏天穿帆布鞋，这双棉袜不闷出脚气",hook:"帆布鞋闷脚容易脚气？选对袜能缓解。",body:"帆布鞋本身不透气，袜子的吸汗就更关键。这双厚薄适中、脚底加密吸汗，能把汗先锁住不糊脚。配合勤换，脚气尴尬少很多。夏天帆布鞋党必备。",vis:"帆布鞋上脚→吸汗层特写→干爽脚心",dur:"27秒"},
+        {t:"纯棉袜有味道？新袜要先洗再穿的原因",hook:"新袜有股味道直接穿？劝你先洗一遍。",body:"新袜出厂有浆料和浮色，直接穿容易痒有味。这双我建议到手先冷水洗一次再穿，味道没了也更软。好习惯比贵袜子更护脚。",vis:"新袜闻一闻→水洗→晾晒柔软",dur:"25秒"},
+        {t:"中筒袜配运动裤，这双长度刚好不堆",hook:"中筒袜穿运动裤总堆一坨？选对长度。",body:"这双筒高卡在小腿最细处，配束脚运动裤刚好露出一截，不堆不滑。弹力够但不勒，跑跳也不掉。运动穿搭的细节，就在这一截。",vis:"运动裤搭配→筒高示意→走动",dur:"26秒"},
+        {t:"老人脚肿穿什么袜？宽口纯棉袜",hook:"家里老人脚肿，普通袜勒得疼？换宽口款。",body:"这双袜口加宽加弹，不勒小腿不勒脚背，纯棉软乎乎的，脚肿也能轻松穿脱。给爸妈备两双，他们不说但你懂的。孝心有时候就是一双袜。",vis:"宽口上脚→老人脚演示→柔软特写",dur:"27秒"},
+        {t:"纯棉袜变形？晾晒方式错了",hook:"袜子越晾越歪？你可能晾错了。",body:"湿袜直接挂衣架会拉长变形。正确是平铺或夹住袜口倒挂。这双我平铺晾了一个月，形状一点没变。小习惯换来袜子寿命，值得。",vis:"错误晾晒vs正确平铺→对比",dur:"25秒"},
+        {t:"隐形袜怕看不见？这双有标识条",hook:"隐形袜左右脚分不清、找不到？这双有巧思。",body:"这双在袜口内侧做了彩色标识条，一眼分清左右、翻出来也好找。后跟点胶防掉，浅口鞋完全隐形。细节控会懂这种爽感。",vis:"标识条特写→左右区分→上脚隐形",dur:"26秒"},
+        {t:"跑步袜和日常袜区别？纯棉款够不够",hook:"跑步能不能穿纯棉袜？先说结论。",body:"纯棉吸汗但湿了干得慢，短跑没问题；长跑建议带速干层的。这双是棉加透气网眼，五公里内完全够用，日常通勤更舒服。按需选，别盲目追贵。",vis:"跑步场景→网眼特写→对比",dur:"28秒"},
+        {t:"梅雨季袜子不干？这双快干棉实测",hook:"南方梅雨季袜子三天不干？这双救急。",body:"这双薄棉快干，阴雨天挂在通风处一天就干。我连续湿冷天测试，没出现过馊味。回南天、梅雨季的家庭，多备两双快干款准没错。",vis:"阴雨场景→悬挂一天→干爽展示",dur:"26秒"},
+        {t:"纯棉袜送礼也行，简约礼盒装",hook:"随手送人的小礼物，袜子其实很得体。",body:"这双出了简约礼盒装，灰白配色不土，送同事、送男友都不尴尬。纯棉舒服是实打实的用心。小礼物重在体面又实用，这盒刚好。",vis:"礼盒打开→摆拍→赠送场景",dur:"25秒"},
+        {t:"一周穿搭不重样，五双纯棉袜轮换",hook:"袜子不够换、天天同一双？教你一周轮换法。",body:"备五双纯棉基础色，黑灰白藏蓝搭配不同鞋裤，一周不重样。这双耐洗不变形，轮换着穿每双都撑得住。衣品从脚开始，真的。",vis:"五双排列→每日搭配→上脚",dur:"26秒"}
+      ]},
+      {name:"秋冬羊毛袜（含二趾羊毛袜）", items:[
+        {t:"冬天脚冷到睡不着？羊毛袜锁温实测",hook:"冬天脚冷得像冰，钻进被窝半天不热？试试羊毛袜。",body:"羊毛本身是天然保温层，能把脚温锁住不散。我睡前穿这双，十分钟脚就暖了，一觉到天亮。南方没暖气、手脚冰凉的姐妹，这双比热水袋管用。",vis:"冰脚特写→穿袜→被窝温暖画面",dur:"28秒"},
+        {t:"二趾羊毛袜比普通羊毛袜暖在哪",hook:"同样是羊毛袜，二趾款为什么更暖？",body:"脚趾分开不互相挤压，血液循环更顺，脚暖得更快。加上羊毛锁温，这双二趾款我穿出门脚心一直热乎。分趾习惯的人穿了就回不去。",vis:"二趾分趾展示→对比普通袜→户外",dur:"27秒"},
+        {t:"羊毛袜扎痒？这双内里软化处理摸给你看",hook:"怕羊毛袜扎痒不敢买？这双我摸给你看。",body:"好羊毛袜内里经过软化处理，绒绒的但不扎。我特意用指腹反复蹭，完全没有刺痒感，贴身穿也行。怕痒的敏感脚，闭眼入这双。",vis:"指腹蹭内里→微距绒感→贴肤",dur:"27秒"},
+        {t:"南方没暖气，这双羊毛袜救我老寒脚",hook:"南方湿冷没暖气，脚像踩冰？这双是救命款。",body:"羊毛吸湿又保暖，湿冷天脚也不冰。我妈老寒脚，穿这双中筒在家走动，说脚心终于有热乎气。配棉拖鞋，整个冬天都好过。",vis:"居家走动→中筒展示→妈妈反馈",dur:"27秒"},
+        {t:"户外通勤脚冻僵？羊毛袜加雪地靴搭配",hook:"冬天通勤脚冻僵？羊毛袜加雪地靴才是标配。",body:"这双中厚羊毛袜配雪地靴，零下也不怕。羊毛排汗不闷，走一路脚是干暖的。上班通勤、接送孩子，脚舒服全天都轻松。",vis:"雪地靴上脚→户外行走→暖脚",dur:"26秒"},
+        {t:"羊毛袜能机洗吗？水温标号要看清",hook:"羊毛袜能不能机洗？能，但看标号。",body:"这双标了可机洗羊毛程序，三十度以下、套洗衣袋就行，洗了不变形不缩。懒人福音。记住别用热水、别烘干，羊毛就乖乖的。",vis:"洗衣袋示意→羊毛程序→洗后展示",dur:"27秒"},
+        {t:"拇外翻穿羊毛袜挤脚？二趾款分开不挤",hook:"拇外翻穿袜大脚趾挤得疼？换二趾款。",body:"二趾羊毛袜把大脚趾和二趾分开，不互相挤压摩擦，拇外翻、分趾习惯的人穿了舒服太多。冬天既能保暖又不硌。这类脚型的福音。",vis:"二趾分趾→大脚趾特写→舒适表情",dur:"28秒"},
+        {t:"羊毛袜越厚越暖？看克重才对",hook:"羊毛袜越厚越暖？错，关键看克重。",body:"保暖看单位面积克重，不是厚度。这双是中厚克重，蓬松度够、不臃肿，靴子里也不挤。买羊毛袜别只图厚，看参数才不踩坑。",vis:"克重标签→蓬松对比→上脚",dur:"28秒"},
+        {t:"冬天当睡袜，这双羊毛袜软糯不扎",hook:"冬天睡觉脚凉，当睡袜穿这双刚好。",body:"内里软糯像踩云，松口不勒脚踝，半夜不会勒醒。我连穿一周当睡袜，脚心一直暖。怕吵到人被窝凉的，这双安排上。",vis:"睡袜上脚→被窝→放松表情",dur:"25秒"},
+        {t:"滑雪爬山必备，羊毛袜排汗不冻脚",hook:"滑雪爬山脚冻僵？专业点用羊毛袜。",body:"运动出汗后化纤袜湿冷冻脚，羊毛袜能排汗还保温，雪场待一天脚不冰。这双中厚款我爬山实测，下山脚还是暖的。户外党刚需。",vis:"户外雪景→爬山→暖脚特写",dur:"27秒"},
+        {t:"羊毛袜臭脚吗？天然抑菌说说清楚",hook:"羊毛袜会不会更臭？正好相反。",body:"羊毛有天然抑菌性，吸了汗也不容易臭，比化纤强。这双我连穿两天测试，脱下来味道很淡。怕臭脚的，羊毛反而是优选。",vis:"闻袜示意→对比化纤→解释",dur:"26秒"},
+        {t:"二趾羊毛袜穿法，分趾不磨小脚趾",hook:"二趾袜不会穿？三十秒教你。",body:"脚尖对准分趾缝，大拇指和二趾各进一格，往上提顺平就行。穿熟了十秒搞定，小脚趾不再被磨。新手第一次慢点，习惯就好。",vis:"分步穿法→分趾对准→走动",dur:"27秒"},
+        {t:"老寒腿从脚暖起，这双中筒护踝",hook:"老寒腿先暖脚，这双中筒护到踝。",body:"中筒长度包住脚踝，阻断寒气从脚腕进。羊毛锁温，我爸说比护踝贴还舒服。家里长辈冬天必备，从脚暖到全身。",vis:"中筒护踝→父亲上脚→满意",dur:"26秒"},
+        {t:"羊毛袜起球？正常现象还是质量差",hook:"羊毛袜起球就是差？先别急着退。",body:"羊毛表面起球是纤维摩擦常态，不等于差。这双起的是小绒球，一剪就好，不影响保暖。如果一穿就大片起球才是短纤劣质。分清再判断。",vis:"小绒球特写→修剪→对比",dur:"27秒"},
+        {t:"冬天穿靴子，这双羊毛袜不显臃肿",hook:"穿靴子塞羊毛袜怕鼓包？这双刚好。",body:"中厚不夸张，贴腿不堆褶，靴筒里平整不显粗。羊毛暖而不肿，搭配骑士靴、雪地靴都利落。冬天又要暖又要好看，就它了。",vis:"靴子里平整→对比鼓包→上脚",dur:"26秒"},
+        {t:"学生宿舍没暖气，羊毛袜过冬",hook:"宿舍没暖气冻脚？学生党备这双。",body:"平价羊毛袜，机洗方便，宿舍轮流穿不嫌少。脚暖了上自习都专心。预算有限的学生，先保证脚暖这一件。",vis:"宿舍场景→上脚→暖气袋类比",dur:"25秒"},
+        {t:"羊毛袜缩水？冷水手洗才保形",hook:"羊毛袜洗一次变小？热水惹的祸。",body:"羊毛怕热怕搓，这双我冷水轻揉、平铺晾干，三次没缩。切记别热水、别拧干。洗护对了，一双穿好几冬。",vis:"冷水洗→平铺→尺寸对比",dur:"26秒"},
+        {t:"二趾羊毛袜适合谁？分趾习惯人群",hook:"二趾袜不是噱头，这几类人真需要。",body:"拇外翻、分趾睡习惯、瑜伽分趾控，这双就是量身定做。脚趾不被挤，血液通脚就暖。对号入座的，别犹豫。",vis:"人群字幕→分趾展示→舒适",dur:"26秒"},
+        {t:"脚干裂冬天更痛？羊毛袜保湿原理",hook:"冬天脚后跟干裂疼？羊毛袜能帮上忙。",body:"羊毛吸走多余汗又留住湿度，脚皮不干绷。我配合凡士林穿这双过夜，裂口好得快。干脚星人冬天的小秘方。",vis:"干裂特写→凡士林+袜→改善",dur:"27秒"},
+        {t:"情侣羊毛袜，冬天脚碰脚都暖",hook:"和对象冬天脚碰脚？同款羊毛袜安排。",body:"中性配色两双装，一起窝沙发脚碰脚都暖。软糯不扎，贴身穿也行。小情侣的冬日仪式感，几十块搞定。",vis:"两双并排→脚碰脚→温馨",dur:"25秒"},
+        {t:"羊毛袜真假？燃烧看灰烬小实验",hook:"羊毛袜真假怎么辨？一个小实验。",body:"剪一小缕线烧，真羊毛是毛发味、灰烬一捻就碎成粉；化纤是塑料味、结硬块。这双我烧过，纯羊毛无疑。买之前会这招，不上当。",vis:"燃烧演示→灰烬捻碎→对比",dur:"29秒"},
+        {t:"上班通勤保暖，这双羊毛袜配西裤",hook:"上班穿西裤脚冷？羊毛袜隐形保暖。",body:"这双薄羊毛款，西裤里不显厚，脚心一直暖。办公室空调再冷也不怕。打工人体面又抗冻，细节见品味。",vis:"西裤上脚→薄羊毛→办公场景",dur:"26秒"},
+        {t:"羊毛袜静电？混纺比例要注意",hook:"羊毛袜噼里啪啦静电？看混纺比例。",body:"纯羊毛本身抗静电，但如果混了太多涤纶就容易炸毛。这双羊毛占比高，基本没静电。买时翻成分表，比例说了算。",vis:"脱袜无静电→成分表→解释",dur:"27秒"},
+        {t:"二趾羊毛袜点胶防滑，在家也穿",hook:"在家地板滑怕摔？二趾羊毛袜加防滑。",body:"这双脚底点了软胶，木地板、瓷砖上走都稳，二趾分开还暖。老人小孩在家穿最合适。保暖防滑一举两得。",vis:"点胶特写→地板行走稳→安心",dur:"26秒"},
+        {t:"老人冬天脚凉，宽口羊毛袜好穿脱",hook:"老人脚凉又穿袜费劲？宽口羊毛袜。",body:"袜口加宽不勒，脚肿也能轻松套进。纯羊毛软乎乎，保暖不扎。给爸妈备两双，冬天脚暖全身暖。",vis:"宽口穿脱→老人脚→柔软",dur:"26秒"},
+        {t:"羊毛袜送礼，礼盒装体面",hook:"冬天送长辈什么？羊毛袜礼盒最实在。",body:"这双出了礼盒装，红灰配色喜庆不土，打开就是暖意。送父母、送领导都体面。实用又走心，节日刚需。",vis:"礼盒打开→摆拍→赠送",dur:"25秒"},
+        {t:"滑雪袜和日常羊毛袜区别",hook:"滑雪袜和平时羊毛袜能混穿？有区别。",body:"滑雪袜更厚、小腿加压防磨，日常穿显臃肿。这双是日常中厚款，通勤居家刚好。按场景选，别将就。",vis:"厚度对比→场景切换→上脚",dur:"27秒"},
+        {t:"冬天运动后脚冷？羊毛袜速干排汗",hook:"冬天运动完脚冰凉？羊毛袜救场。",body:"羊毛排汗快、湿了也保温，运动后脚不冰。这双我晨跑实测，回家脚还是暖的。冬天运动的隐藏装备。",vis:"晨跑→脱鞋暖脚→对比化纤",dur:"26秒"},
+        {t:"羊毛袜怎么收纳？樟木防蛀",hook:"羊毛袜收纳怕虫蛀？一招搞定。",body:"换季前洗净晾干，放樟木块或雪松木，密封袋装好。这双我这样存了半年，拿出来没洞没味。羊毛贵，收纳要用心。",vis:"密封袋+樟木→存放→取出",dur:"26秒"},
+        {t:"一年就穿一季？羊毛袜买几双够轮换",hook:"羊毛袜就冬天穿，买几双不浪费？",body:"建议三到四双轮换，洗晒不打架。这双耐穿，三四双能撑一整冬。算下来一天成本几毛钱，脚暖值了。",vis:"三双排列→轮换示意→价格",dur:"25秒"}
+      ]},
+      {name:"瑜伽普拉提袜（防滑点胶）", items:[
+        {t:"瑜伽垫上打滑？点胶袜实测",hook:"瑜伽垫上总打滑？先别怪平衡差。",body:"看看你脚上这双——普通袜底平滑，一受力就滑。这双脚底满点胶，像小吸盘抓垫子，树式单脚都稳。练瑜伽、普拉提、居家跳操都适用。打滑的姐妹换它就对了。",vis:"普通袜滑vs点胶稳对比→单脚树式",dur:"28秒"},
+        {t:"练普拉提买袜先盯脚底点胶",hook:"练普拉提买袜，先盯一个地方：脚底。",body:"防滑全靠这层点胶。颗粒密、按压回弹快的才抓地。这双我挑了三家才定，软硅胶不硌脚还能机洗。买之前翻过来看一眼点胶，比看花色重要。",vis:"微距点胶→按压回弹→挑选",dur:"27秒"},
+        {t:"光脚练怕脏、普通袜打滑，这双回购3次",hook:"光脚练怕脏、普通袜打滑？这双我回购三次。",body:"在家跟练最怕这两点，这双点胶袜刚好解决，还透气不闷。今天下单送收纳袋，练完直接装包。真心好穿才反复买，不是带货话术。",vis:"博主坐垫上→展示袜→收纳袋",dur:"26秒"},
+        {t:"下犬式总滑？点胶抓地演示",hook:"下犬式脚总往后溜？给你看抓地演示。",body:"我做一次下犬式，脚掌用力往后蹬，普通袜直接滑半截，这双点胶咬住垫子纹丝不动。核心发力更稳，动作也标准。练阿斯汤加的尤其需要。",vis:"下犬式演示→脚底特写→稳",dur:"27秒"},
+        {t:"瑜伽袜和船袜区别？别买错",hook:"瑜伽袜和船袜是一回事？大错特错。",body:"船袜底平滑，垫上照样滑；瑜伽袜脚底有点胶才防滑。这双是专为垫上运动设计的，别拿船袜凑数。买错等于白买，认准点胶。",vis:"船袜vs瑜伽袜底对比→错vs对",dur:"27秒"},
+        {t:"普拉提核心床穿什么袜",hook:"普拉提核心床（reformer）穿什么袜？",body:"核心床踏板光滑，必须防滑。这双满底点胶在踏板上也抓得牢，动作不晃。馆里很多姐妹都换这双了。上核心床前先备好。",vis:"核心床场景→脚踩踏板→稳",dur:"26秒"},
+        {t:"居家跳操也用这双点胶袜",hook:"跟着刘畊宏跳操总滑？这双点胶袜安排。",body:"客厅地板比垫子还滑，普通袜根本站不住。这双点胶抓地，开合跳、深蹲都不移位。在家锻炼安全又带劲。地板党刚需。",vis:"居家跳操→点胶抓地→活力",dur:"26秒"},
+        {t:"点胶掉了怎么办？看这双的牢固度",hook:"点胶袜最怕点胶掉？看这双牢不牢。",body:"这双点胶是高温压合，我暴力抠、机洗十次都没掉。选购时看压合是否平整服帖。牢的能穿一季以上，别买那种一搓就掉的。",vis:"抠扯测试→机洗后→点胶完好",dur:"27秒"},
+        {t:"瑜伽袜分趾款和满底款怎么选",hook:"瑜伽袜分趾款和满底款，选哪个？",body:"分趾款脚趾更灵活，适合手平衡要求高的流派；满底款包裹感强、更稳。这双是满底，新手友好。按你练的流派挑，别盲选。",vis:"分趾vs满底对比→上脚→建议",dur:"28秒"},
+        {t:"流瑜伽出汗多，这双透气不闷",hook:"流瑜伽大汗淋漓，袜闷脚？这双透气。",body:"脚背做了透气网眼，汗水快速散掉不糊脚。我一节流瑜伽下来，脱袜脚是润的 not 湿黏。暴汗星人也能安心练。",vis:"流瑜伽场景→网眼特写→干爽",dur:"26秒"},
+        {t:"新手买瑜伽袜，先看这3点",hook:"第一次买瑜伽袜，记住这三点。",body:"一看点胶面积和密度，二看是否透气网眼，三看袜口包不包脚踝。这双三点都达标，新手闭眼入。别被花里胡哨图案带偏。",vis:"三点字幕→对应特写→总结",dur:"28秒"},
+        {t:"点胶袜机洗会掉吗？实测",hook:"点胶袜能机洗吗？实测给你看。",body:"这双我套洗衣袋、常温机洗十次，点胶一颗没掉。关键是别用热水、别和硬物混洗。懒人也能养好它。洗护做对，寿命翻倍。",vis:"洗衣袋→机洗→点胶完好",dur:"26秒"},
+        {t:"瑜伽馆自带袜更卫生",hook:"瑜伽馆公用地垫，你敢光脚？自带袜更卫生。",body:"馆里人流杂，光脚容易交叉感染。这双点胶袜自己专用，练完一装包，干净又防滑。对自己负责，从一双专用袜开始。",vis:"瑜伽馆场景→自备袜→装入包",dur:"25秒"},
+        {t:"这双瑜伽袜我穿了半年还抓地",hook:"一双瑜伽袜能穿多久？我这双半年了。",body:"每周两练，点了胶的脚底依旧抓地，没变秃。面料也没松垮。算下来一次几毛钱，比月卡值。耐穿才是真省钱。",vis:"旧袜展示→点胶依旧→对比",dur:"26秒"},
+        {t:"孕妇瑜伽也能穿，防滑护肚",hook:"孕期也想练瑜伽？防滑袜护你和孩子。",body:"这双点胶稳，孕妈做舒缓动作不滑不晃，护肚也安心。袜口宽不勒小腿，肿了也舒服。特殊时期的温柔保护。",vis:"孕妇舒缓动作→点胶稳→安心",dur:"26秒"},
+        {t:"芭蕾把杆课穿什么袜",hook:"芭蕾把杆课穿什么袜？点胶袜也合适。",body:"把杆课常在地胶上练，点胶抓地不滑，半脚尖也稳。这双贴合不堆，动作利落。舞蹈生备一双没错。",vis:"把杆动作→脚底特写→稳",dur:"25秒"},
+        {t:"瑜伽袜尺码怎么选，紧一点还是松",hook:"瑜伽袜买紧还是松？很多人选错。",body:"建议选贴合不勒的码，太松点胶对不准垫子、太紧勒脚背。这双按正常码选就刚好，脚背高选大一码。尺码表对一下再下单。",vis:"尺码表→上脚松紧→建议",dur:"27秒"},
+        {t:"点胶颗粒疏密影响啥",hook:"点胶颗粒疏密，到底影响什么？",body:"太疏抓地弱，太密又硬硌。这双是均匀中密，软硅胶按压有弹性，抓地又不硌脚。密度是防滑和舒适的平衡点。",vis:"疏密对比→按压→舒适",dur:"27秒"},
+        {t:"这双瑜伽袜配瑜伽裤一套好看",hook:"瑜伽袜也能穿出穿搭感？配这套。",body:"这双是 ins 风莫兰迪色，配同色瑜伽裤，上镜干净高级。练完直接逛街也不违和。运动也好看，才更有动力。",vis:"全身搭配→上镜→自信",dur:"25秒"},
+        {t:"男生练瑜伽穿什么袜",hook:"男生练瑜伽穿袜尴尬？这双中性款。",body:"黑灰配色不娘气，点胶防滑该有的都有。我男学员反馈抓地稳、不闷。兄弟们别光脚硬扛，护脚也防滑。",vis:"男生上脚→动作→稳",dur:"25秒"},
+        {t:"高温瑜伽出汗多，这双速干",hook:"高温瑜伽像蒸桑拿，袜受得了？这双速干。",body:"高温房汗如雨下，这双网眼速干，汗不积脚底，点胶照样抓地。一节课下来脚不滑不黏。高温房刚需装备。",vis:"高温场景→网眼→干爽",dur:"26秒"},
+        {t:"瑜伽袜送礼给练瑜伽的朋友",hook:"朋友爱练瑜伽，送啥不踩雷？送瑜伽袜。",body:"这双点胶防滑实用，包装简洁，送练瑜伽的闺蜜超贴心。比送奶茶健康，比送摆件有用。小众但精准的礼物。",vis:"礼盒→赠友→开心",dur:"25秒"},
+        {t:"点胶袜静音吗？楼上邻居友好",hook:"居家跳操怕吵楼下？点胶袜其实更静音。",body:"点胶是软硅胶，落地比硬底袜更吸声，楼下基本听不到咚咚。这双我楼上测试，邻居没投诉。居家锻炼不扰民的小细节。",vis:"落地特写→静音示意→友好",dur:"26秒"},
+        {t:"这双瑜伽袜五指分开更稳",hook:"五指分开的瑜伽袜，稳到什么程度？",body:"每根脚趾独立抓垫，平衡感直接拉满，树式、鹰式都更稳。这双分趾设计贴合脚型，练平衡流派必入。试过就回不去。",vis:"五指分趾→平衡动作→稳",dur:"26秒"},
+        {t:"普拉提 reformer 袜要求",hook:"reformer 核心床对袜有要求？有。",body:"踏板光滑必须满底防滑，袜口要包踝防勾。这双都满足，我在课上试过不晃。上核心课前确认袜子达标，安全又高效。",vis:"reformer动作→脚踩→达标",dur:"26秒"},
+        {t:"瑜伽袜洗护，点胶寿命延长",hook:"瑜伽袜怎么洗点胶不掉？三招。",body:"套洗衣袋、常温洗、别暴晒别烘干。这双按这三招养，半年还抓地。洗护偷懒，再好的袜也短命。",vis:"三招字幕→洗衣袋→晾晒",dur:"27秒"},
+        {t:"这双瑜伽袜防滑还好看，ins风",hook:"防滑和好看能兼得？这双就是。",body:"莫兰迪低饱和配色，点胶排列也好看，上脚拍照出片。练完发朋友圈被问链接。实用和颜值都不缺席。",vis:"上脚美图→点胶排列→出片",dur:"25秒"},
+        {t:"亲子瑜伽，母女同款袜",hook:"带娃练亲子瑜伽？母女同款袜安排。",body:"这双有成人儿童同款，点胶防滑，小朋友跑跳也稳。周末陪练增进感情，脚底都安全。亲子时光的小装备。",vis:"母女同款→亲子动作→温馨",dur:"25秒"},
+        {t:"瑜伽袜平价替代大牌？这双够用",hook:"大牌瑜伽袜上百块，平替行不行？",body:"这双点胶密度、透气、做工都不输大牌，价格三分之一。我对比穿了一个月，抓地没差。理性消费，把钱花在刀刃上。",vis:"对比大牌→特写→价格",dur:"27秒"},
+        {t:"一年练300天，这双瑜伽袜陪我",hook:"一年练三百天，陪我最久的是这双袜。",body:"从新手到日常打卡，它抓地从来没掉链子。洗了几十次还服帖。真正的好物不喧哗，默默陪你变好。练瑜伽的，懂这种踏实。",vis:"练习混剪→旧袜特写→感慨",dur:"28秒"}
+      ]},
+      {name:"纯棉无骨袜（不勒脚）", items:[
+        {t:"袜头硬疙瘩硌脚？剪开看无骨缝",hook:"袜头有个硬疙瘩硌脚趾？剪开给你看差别。",body:"普通袜是'有骨缝'，接缝鼓个包顶脚趾；这双无骨袜把缝头藏进布里，摸上去平平的。我当场剪开两双对比，差距一眼见。脚感这件事，缝头说了算。",vis:"剪刀剪普通袜→疙瘩vs平整→摸",dur:"28秒"},
+        {t:"脚踝勒红印？换宽罗纹无骨袜",hook:"袜子脱下来脚踝一圈红印？该换袜了。",body:"红印是袜口太紧勒的。这双无骨袜用宽罗纹高弹棉，压力分散不勒肉，我穿一天几乎没印。容易水肿、久坐的姐妹，袜口比花色重要。",vis:"红印对比→宽罗纹上脚→按压",dur:"27秒"},
+        {t:"纯棉袜洗几次松垮？认真正无骨",hook:"纯棉袜洗几次就松垮变形？认真正无骨。",body:"松垮多是缝头工艺差、洗后散架。这双无骨缝头平整锁死，洗了十次还挺括。买袜看工艺不看广告，正无骨才耐穿。",vis:"松垮对比→洗后挺括→特写",dur:"27秒"},
+        {t:"敏感肌穿什么袜？无骨不磨脚",hook:"脚皮敏感一磨就红？无骨袜救你。",body:"这双内外都平，缝头不硌、袜口不勒，敏感肌穿一天也不红不痒。材质是亲肤精梳棉，贴肤像没穿。娇气脚也能被温柔对待。",vis:"敏感脚特写→无骨平整→舒适",dur:"26秒"},
+        {t:"无骨袜和有骨袜摸起来差别",hook:"无骨和有骨，摸一下就知道。",body:"手指拂过袜头，有骨袜是一道楞、硌指腹；无骨袜是顺滑一片。这双我闭眼摸都能分清。脚感这种事，指尖最诚实。",vis:"闭眼摸对比→指腹感受→笑",dur:"25秒"},
+        {t:"儿童袜子也要无骨，不硌脚趾",hook:"给孩子买袜，别忽略无骨。",body:"小朋友脚趾嫩，有骨缝头硌得不愿穿。这双儿童无骨袜，缝头平整不硌，娃主动肯穿。活性印染洗不硬。当爸妈的，细节护脚。",vis:"儿童脚穿→平整缝头→开心",dur:"26秒"},
+        {t:"无骨袜机洗不变形？缝头工艺看",hook:"无骨袜机洗会散？看缝头工艺。",body:"这双是特殊无骨缝，线迹锁死，机洗十次缝头不翻不散。选购时翻看袜头是否平整服帖。工艺到位，机洗才放心。",vis:"机洗→缝头完好→特写",dur:"26秒"},
+        {t:"脚背容易勒？这双无骨宽口",hook:"脚背厚、一穿袜就勒？这双宽口无骨。",body:"袜口加宽加弹，压力不集中在脚背，我这种厚脚背穿一天没印。无骨缝头还不硌脚趾。脚型偏厚的，照这个标准选。",vis:"宽口上脚→脚背特写→无印",dur:"26秒"},
+        {t:"糖友袜口要松，无骨宽口款",hook:"家里糖友选袜，这条很重要。",body:"糖尿病脚怕勒、怕磨，这双宽口无骨袜不勒血运、缝头不硌，纯棉软乎。给长辈备两双，日常护脚从小处着手。用心比贵重要。",vis:"宽口穿脱→无骨平整→关怀",dur:"27秒"},
+        {t:"无骨袜为什么贵一点？工艺解释",hook:"无骨袜凭什么比普通袜贵？说清楚。",body:"无骨缝要把缝头翻进布里再锁边，多一道工序、费人工，所以贵几块。但脚感天差地别，这双穿过的人都回不去。为脚感买单，值。",vis:"工艺示意→对比脚感→价格",dur:"28秒"},
+        {t:"上班久坐脚肿，无骨袜不勒",hook:"坐一天班脚肿、袜口勒出印？换无骨。",body:"这双宽罗纹无骨袜，久坐八小时脚踝没勒痕，下班脱袜是干净的。通勤族每天八小时穿着，舒服是硬指标。",vis:"办公场景→脱袜无印→舒坦",dur:"26秒"},
+        {t:"纯棉无骨袜里外都平，体验",hook:"一双好袜的标准：里外都平。",body:"这双翻过来摸内里，缝头藏得服服帖帖，没有一点硌手。脚伸进去像被棉花包住。里外都平的袜，才配叫舒适袜。",vis:"翻里特写→抚摸→上脚",dur:"25秒"},
+        {t:"孕妇脚肿，无骨宽口袜友好",hook:"孕期脚肿穿袜费劲又勒？这双友好。",body:"袜口加宽好穿脱，不勒小腿不硌脚背，无骨缝头对肿脚温柔。我孕妈朋友说终于不抗拒穿袜了。特殊时期的小体贴。",vis:"宽口穿脱→孕妇脚→放松",dur:"26秒"},
+        {t:"无骨袜真假？一摸缝头就知道",hook:"标无骨就是真无骨？一摸缝头辨真假。",body:"假无骨摸着还是一道楞；真的平整无缝感。这双我让大家摸视频里的缝头，对比一目了然。买前看实物或高清图，别信标签。",vis:"真假摸对比→缝头特写→辨",dur:"27秒"},
+        {t:"这双无骨袜我穿一天不留印",hook:"一双袜舒不舒服，看脱下来有没有印。",body:"我这双无骨袜从早穿到晚，脱下脚踝干干净净没红印。宽口+无骨双保险。脚感好不好，印子最诚实。",vis:"全天穿着→脱袜无印→满意",dur:"25秒"},
+        {t:"孩子不爱穿袜？无骨不硌才肯穿",hook:"娃总拽袜子说硌？多半是缝头问题。",body:"换成无骨袜，缝头不硌脚趾，娃不抗拒了。这双还做了宽口不勒脚腕。搞定挑食穿袜，从换无骨开始。",vis:"娃穿袜→不抗拒→蹦跳",dur:"25秒"},
+        {t:"无骨袜搭配小白鞋，隐形不堆",hook:"小白鞋配袜最怕堆一坨？无骨薄款。",body:"这双无骨薄棉，脚背平贴不鼓包，小白鞋里干净利落。露出一截纯白边还显干净。搭配党细节拿捏。",vis:"小白鞋上脚→脚背平整→搭配",dur:"25秒"},
+        {t:"纯棉无骨袜四季可穿",hook:"无骨袜只能冬天穿？错，四季都行。",body:"这双薄厚适中，夏天透气不闷、冬天配靴不挤。无骨脚感一年四季都需要。备几双轮换，全年脚舒服。",vis:"四季场景切→上脚→舒适",dur:"26秒"},
+        {t:"脚后跟磨破？无骨袜加厚后跟",hook:"脚后跟总磨破皮？看后跟加固。",body:"这双在无骨基础上加厚后跟，缓冲摩擦，新鞋磨合期也不破。我穿新靴实测，脚跟完好。爱穿新鞋的，后跟加固必须有。",vis:"后跟特写→新靴行走→完好",dur:"26秒"},
+        {t:"无骨袜送礼，体面舒适",hook:"送实用不踩雷的礼？无骨袜体面。",body:"这双出了简约礼盒，纯色无骨，送长辈送同事都得体。舒服是实打实的用心，不花哨却记得住。小礼物的高分选项。",vis:"礼盒→赠送→舒心",dur:"25秒"},
+        {t:"这双无骨袜洗50次还平整",hook:"一双袜能扛多少次洗？这双五十次。",body:"我记录了洗五十次，缝头没翻、袜口没松、形状没歪。无骨工艺+好棉，耐穿是真。算下来单次成本几分钱。",vis:"计数展示→洗后平整→对比",dur:"27秒"},
+        {t:"老人穿袜口松的，无骨宽口",hook:"老人穿袜口紧的费劲？宽口无骨。",body:"袜口加宽一拉就进，不勒小腿，无骨缝头不硌。纯棉软乎，爸妈穿脱都轻松。孝心藏在每天穿脱的顺手里。",vis:"宽口穿脱→老人脚→轻松",dur:"26秒"},
+        {t:"无骨袜为什么适合运动？不磨水泡",hook:"运动袜要无骨？防水泡是关键。",body:"长跑、跳绳摩擦多，有骨缝头容易磨出水泡。这双无骨平整，我十公里下来脚无伤。爱运动的，袜头平整比花哨重要。",vis:"运动场景→脚无伤→特写",dur:"26秒"},
+        {t:"纯棉无骨袜成分，看含棉量",hook:"无骨袜看工艺，也看含棉量。",body:"这双棉含量标得清，氨纶只管弹性不抢舒适。翻成分表，棉高才软糯亲肤。工艺和成分双达标，才是真舒适袜。",vis:"成分表→棉特写→上脚",dur:"26秒"},
+        {t:"这双无骨袜脚趾无接缝，光脚感",hook:"想要光脚感又怕脏？无骨袜最接近。",body:"脚趾区完全无接缝，穿上像没穿袜，家里地暖、瑜伽馆都能光脚感出行。这双我居家直接当裸感袜。舒服到忘记穿了袜。",vis:"脚趾特写→居家走动→忘我",dur:"26秒"},
+        {t:"通勤穿皮鞋，无骨袜不硌脚背",hook:"穿皮鞋脚背硌得慌？换无骨薄款。",body:"这双无骨薄棉，脚背平贴不顶不硌，皮鞋里利落。一天通勤脚背自在。打工人脚舒服，效率都高点。",vis:"皮鞋上脚→脚背平整→办公",dur:"26秒"},
+        {t:"无骨袜收纳，卷起来不占地方",hook:"袜子收纳乱？无骨袜一卷就乖。",body:"这双弹性好，卷成小卷塞抽屉不散不占。我按颜色排一排，找袜三秒。收纳顺了，生活也顺一点。",vis:"卷袜演示→抽屉排列→整齐",dur:"24秒"},
+        {t:"这双无骨袜情侣款也有",hook:"想和对象穿同款舒适袜？情侣无骨。",body:"中性纯色，男女同款，无骨宽口不勒。一对价格友好，纪念日随手送也贴心。舒服的情侣感，低调又实在。",vis:"两双并排→同款上脚→甜",dur:"25秒"},
+        {t:"无骨袜平价好穿，学生党",hook:"学生党要舒服又要省？无骨平价款。",body:"这双把无骨工艺做到平价，宿舍机洗不变形，脚感不输贵的。备几双轮换，日常通勤上课都舒服。预算有限也能护脚。",vis:"组合装→宿舍→上脚",dur:"25秒"},
+        {t:"一年回购的无骨袜，就这双",hook:"一年回购好几次的袜，就这双无骨。",body:"从第一次被脚感惊艳，到如今常备十几双轮换。缝头永远平整、袜口永远不勒。真正的好物不喧哗，脚最知道。",vis:"多双排列→旧袜特写→感慨",dur:"27秒"}
+      ]}
+    ]
+  },
+  {
+    id:"brand", title:"品牌化 & 供应链", tag:"长期",
+    note:"从代发走向贴牌，是做成可持续品牌的关键一步。",
+    items:[
+      "1688 找支持贴牌/定制包装/放品牌卡的供应商",
+      "谈组合装（3双/5双礼盒）拉高客单价到49+",
+      "确定品牌名 + slogan（如：每一步都舒服）",
+      "统一 VI：店招/主图/包装/品牌卡/详情页一套视觉",
+      "注册商标（TM 申请），保护心智",
+      "把代发讲成 我替你把关 的人设内容持续输出",
+      "建立周报：花费/流量/加购/成交/客单价/复购"
+    ]
+  },
+  {
+    id:"supply", title:"供应链·袜子加工厂", tag:"代工资源",
+    note:"以下为公开工商/B2B 平台（以诸暨大唐袜业集群为主）搜罗的代工厂信息，整理于 2026 年 8 月。电话与报价多为平台登记，下单前务必二次核实、先小批量试样再下大货。你当前做一件代发，后续品牌化（贴牌定制）再从这里筛选合作厂。勾选代表『已联系/已试样』。",
+    resources:[
+      {name:"诸暨市湖湘针织有限公司", cat:"全品类(宝宝/儿童/成人/全棉/运动/毛圈/船袜/五趾袜)", addr:"浙江省诸暨市大唐镇中兴东路108号", phone:"0575-7547687 / 13387423938（邹晓魏）", scale:"员工101-500人，月产10万打；OEM/ODM；通过 Oeko-Tex、BSCI、ISO-9001", quote:"来样订做/成品半成品加工，具体报价需询价", note:"外贸品质，欧美日韩市场有口碑，适合做品质定位款"},
+      {name:"诸暨市友润袜业有限公司", cat:"男袜/女袜/儿童袜/连裤袜/毛圈袜", addr:"浙江省诸暨市大唐镇龙潭路227号", phone:"0575-87719703 / 13626750334（张玲巧）", scale:"员工51-100人，全电脑袜机64台，月产300万双；OEM；ISO9000；80%出口欧美", quote:"来料/来样/来图/OEM加工，报价需询价", note:"外贸品质、诚信获认可，量大稳定"},
+      {name:"诸暨市大唐家易纺织化纤厂", cat:"连裤袜/毛圈/羽毛纱毛巾袜/男女袜/运动/丝袜/童袜/船袜", addr:"诸暨市大唐镇方田村", phone:"15957511156 / 0575-87736177 / 0575-87731551（孟柏炎）", scale:"加工设备300台；旗下淘宝批发店 shop36927120.taobao.com", quote:"请来电询价；货运起发量600双，600以下发快递", note:"支持来样定做、来料加工；可淘宝店小批量混批，适合起步"},
+      {name:"诸暨市磊拓袜业有限公司", cat:"成人袜/足球袜/宠物袜(可logo印花/改版)", addr:"浙江诸暨大唐（标准化厂房3000余㎡）", phone:"15257571690（崔经理）", scale:"团队60余人，集研发/定制/加工/现货批发；OEM/ODM贴牌", quote:"接单灵活，大批量外贸+小批量国内现货，需询价", note:"适合做贴牌定制与小批量试单"},
+      {name:"诸暨市华祎针织有限公司", cat:"羊毛袜/男女童袜/运动袜/卡通学生袜", addr:"浙江绍兴诸暨市暨阳街道宜南上马村", phone:"0575-87331737 / 18657521345（马盛刚）", scale:"生产型，羊毛袜有现货", quote:"女款羊毛袜 成本3.2元/双（17.5元/盒）现货", note:"有现货，适合先小批量拿样测款"},
+      {name:"诸暨市安华升烨袜厂", cat:"男女棉纱袜/拉毛棉袜/拉毛童袜", addr:"诸暨市安华镇工业园区", phone:"见11467商铺页在线询价（未公开直拨）", scale:"20多年专业，全套流水线，日加工能力2万双", quote:"公开报价：混纺/船袜¥1/双、全棉男袜¥2/双、普通袜¥1-3/双", note:"价格透明，适合薄利走量基础款"},
+      {name:"诸暨唐潮针纺有限公司", cat:"竹纤维袜/拉毛袜/全棉/船袜/丝袜/防臭/运动/兔羊毛", addr:"诸暨市暨阳街道宜东村南山400号", phone:"0575-87189111 / 13735359928（宣雪峰）", scale:"织袜机100余台+外协300余台，月产60-80万双；OEM贴牌；自有品牌", quote:"竹纤维女袜¥3/双（订货）", note:"自有品牌代工经验，适合差异化材质款"},
+      {name:"诸暨市诺尔佳针织有限公司", cat:"双针/单针提花袜、毛圈袜、外贸袜", addr:"诸暨市大唐镇黎明村毛阳自然村808号", phone:"0575-87756660 / 13587388339（杨柳君）", scale:"13年外贸生产，定型/包装/开票齐全", quote:"羊毛/兔毛袜¥4/双（订货），FOB 5-7元/双", note:"外贸品质，适合羊毛袜品质线"},
+      {name:"浙江诸暨益明袜厂", cat:"平板/毛圈袜，精梳棉", addr:"浙江绍兴（邮编311821）", phone:"见黄页88商铺在线联系", scale:"个体经营，进口韩国袜机，OEM/来料加工", quote:"公开明细：精梳棉女袜(27g)1.96元/双、童袜(17g)1.25元/双(5000双起)；涤棉童袜0.93元", note:"起订量低、单价透明，适合起步试单"}
+    ]
+  },
+  {
+    id:"taoke", title:"淘客团长资源", tag:"推广渠道",
+    note:"做淘宝客（淘客）推广，核心是找对『招商团长』把货分发出去。下面是从官方入口到第三方平台、社群的渠道汇总。勾选代表『已对接/已合作』。注意：官方不收押金加盟费，凡是让交钱进团的都要警惕。",
+    resources:[
+      {name:"淘宝客后台·团长活动广场（官方）", cat:"官方渠道·首选", addr:"千牛/淘宝联盟后台 → 推广管理 → 团长活动广场", phone:"—（后台旺旺直联团长）", scale:"海量团长招商活动，按营销场景(品牌团/单品招商/券直播/白菜价)与类目筛选", quote:"按成交付佣金；团长活动可能收服务费，可谈", note:"新店先在这里找袜子/服饰类目团长，旺旺沟通定制跑单方案"},
+      {name:"大淘客 www.dataoke.com", cat:"第三方选品平台", addr:"网站 → 大淘号", phone:"—（站内展示联系方式）", scale:"大量团队淘客，可按擅长领域/入驻天数/发布商品数筛选", quote:"免费入驻展示，合作谈佣金", note:"找与你类目匹配的团队淘客，看历史发布量判断实力"},
+      {name:"淘客镇 www.taokezhen.com", cat:"第三方免费平台", addr:"网站首页", phone:"—", scale:"个人淘客9892+、团队淘客2万+，按性质(个人/团队)与粉丝数(1W+/5W+/10W+)筛选", quote:"免费展示平台，合作谈佣金", note:"全网唯一免费淘客展示平台，适合广撒网找中小淘客"},
+      {name:"QQ群（社群渠道）", cat:"社群渠道", addr:"QQ → 找群 → 搜『淘客交流群』『袜子招商』", phone:"—", scale:"大量圈内淘客，进群喊一句即有人联系", quote:"社群对接，谈佣金/服务费", note:"进群混熟、了解他们爱推什么品，再针对性调整"},
+      {name:"微博（达人渠道）", cat:"达人种草", addr:"微博搜类目关键词(纯棉袜/瑜伽袜/羊毛袜)", phone:"—（博主认证页有联系方式）", scale:"大量淘客大V，粉丝百万级", quote:"私信/QQ谈合作，按成交付佣", note:"搜你类目关键词，看粉丝画像匹配度再私信"},
+      {name:"淘宝联盟·生态伙伴 pub.alimama.com", cat:"官方入口", addr:"官网入驻", phone:"—", scale:"官方生态：社交/内容/媒体/区域四大生态，覆盖群推广/短视频/图文/导购", quote:"注册免费，成交拿佣金提现", note:"商家也可在此了解淘客玩法，规划自家淘客体系"},
+      {name:"团长资质参考（给商家用）", cat:"避坑·判断标准", addr:"淘宝联盟『我要成为团长』", phone:"—", scale:"申请门槛：阿里妈妈账号、绑支付宝、开通≥6个月、近30天淘客结算≥3000元、无违规", quote:"官方不收押金/加盟费", note:"用来判断对方是不是真有实力的团长，别被『交钱进团』骗"},
+      {name:"合作避坑清单", cat:"避坑", addr:"—", phone:"—", scale:"—", quote:"—", note:"①凡让交押金/加盟费进团的都是骗子；②优先选有资质认证+类目匹配的团长；③看历史带货数据而非只看出价；④先小批量试单测转化再加大预算"}
+    ]
+  },
+  {
+    id:"live", title:"直播（周末可选）", tag:"加分",
+    note:"副业初期可不做。有稳定成交和空闲后再上，每月1-2场即可。下方「直播话术脚本」点「脚本」展开可照着念；建议节奏：开场5分钟→讲款3轮各3-4分钟→逼单循环2-3分钟→结尾3分钟，单场2-3小时。",
+    items:[
+      "准备直播设备：手机+补光灯+干净背景+提词器",
+      "写好话术卡：开场/讲款/逼单/结尾",
+      "固定直播时间（如周六晚），培养粉丝习惯",
+      "用关注领券+点赞抽奖+截屏送袜三件套做互动",
+      "下播剪 2-3 条高光转短视频，零成本二次曝光"
+    ],
+    livescripts:[
+      {t:"开场话术：福利钩子拉停留+关注",hook:"（环节目标）前5分钟用福利款把人留下来并引导关注店铺。",body:"欢迎新进来的姐妹！今天咱们专讲脚感舒服的袜子——无骨不勒、瑜伽防滑、冬天保暖全都有。新粉点左上角关注店铺，下播前抽3位送瑜伽袜！今天福利款9块9限量，想要的扣1。先别走，待会教你怎么挑不硌脚的袜。",vis:"举福利款袜子→指左上角关注键→比手势'扣1'",dur:"循环5分钟"},
+      {t:"讲款话术：瑜伽普拉提袜（防滑点胶）",hook:"（环节目标）讲清卖点+试穿演示，建立信任。",body:"这双是练瑜伽普拉提专用的，脚底满点胶，我直接在垫子上做下犬式给你们看——脚掌往后蹬，稳稳的不滑。普通袜底平滑一用力就溜。面料透气网眼，流瑜伽暴汗也不闷。在家跳操、核心床都能穿。脚汗多、怕滑的姐妹闭眼入。",vis:"脚穿点胶袜→垫上下犬式演示→微距点胶→对比普通袜",dur:"约3-4分钟"},
+      {t:"讲款话术：纯棉无骨袜（不勒脚）",hook:"（环节目标）用剪开/触摸证明无骨，打消'硌脚'顾虑。",body:"很多姐妹说袜头硌脚趾、脚踝勒红印，看这双——我直接剪开给你们看，缝头是藏进布里的，平平的没有硬疙瘩。袜口是宽罗纹高弹，我脚背厚穿一天都没印。纯棉亲肤，敏感肌、久坐脚肿的都适合。每天穿八小时的，舒服是硬指标。",vis:"剪刀剪普通袜对比→摸无骨平整→展示宽口袜口→上脚",dur:"约3-4分钟"},
+      {t:"讲款话术：秋冬羊毛袜（二趾保暖）",hook:"（环节目标）突出保暖+分趾好处，对应冬季需求。",body:"冬天脚冷到睡不着的，这双羊毛袜锁温实测过，穿十分钟脚就暖。二趾款把大脚趾分开，不互相挤、血循环顺，脚暖更快，拇外翻、分趾习惯的姐妹特别合适。内里软化处理不扎，贴身穿也行。南方没暖气、户外通勤的必备。",vis:"保暖对比→二趾分趾展示→摸内里绒感→户外/被窝",dur:"约3分钟"},
+      {t:"逼单话术：组合装优惠+倒计时",hook:"（环节目标）用组合装和限时限量促成交。",body:"单买不划算，今天组合装三双——瑜伽加无骨加羊毛，覆盖你一周场景，算下来一双才一杯奶茶钱。前50单送收纳袋，库存不多了，想要的现在去购物车拍，拍下再送5元复购券。倒计时3分钟，错过等下周。",vis:"举组合装→指购物车→展示优惠券→倒计时手势",dur:"约2-3分钟循环"},
+      {t:"结尾话术：抽奖+关注领券+下场预告",hook:"（环节目标）沉淀粉丝、预告下场，降低流失。",body:"快下播了，截屏当前画面私信我，抽3位送瑜伽袜！没关注的先点关注，关注店铺领5元复购券，下次直接抵。咱们每周六晚8点固定播，下周六讲怎么挑宝宝袜。点关注不迷路，咱们下周见！",vis:"截屏动作→指关注领券→写'下周六晚8点'纸板",dur:"约3分钟"},
+      {t:"异议应对：尺码/起球/发货/退换",hook:"（环节目标）即时答疑，减少跳出和退货。",body:"常见问题我统一答：尺码按正常码选，脚背高选大一码；点胶袜套洗衣袋常温洗不掉胶；纯棉袜冷水洗不易缩；咱们支持七天无理由，质量问题包退。有任何问题公屏扣出来，我逐个回。",vis:"举手机看公屏→逐条指答→比'OK'手势",dur:"穿插全程"}
+    ]
+  }
+];
+
+/* ===== 状态 ===== */
+let state={};                 // 本地勾选状态 {id:true}
+let TOKEN=null, GIST_ID=null; // GitHub token 与同步用的 gist id
+let saveTimer=null;
+const GH_API="https://api.github.com";
+const GIST_FILE="zuben-todo-state.json";
+const GIST_DESC="ZUBEN TODO state";
+
+function ghHeaders(extra){ return Object.assign({"Authorization":"Bearer "+TOKEN,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}, extra||{}); }
+function loadLocal(){
+  try{ state=JSON.parse(localStorage.getItem("zuben_state")||"{}"); }catch(e){ state={}; }
+  try{ TOKEN=localStorage.getItem("zuben_token")||null; }catch(e){}
+  try{ GIST_ID=localStorage.getItem("zuben_gist")||null; }catch(e){}
+}
+function saveLocal(){ try{ localStorage.setItem("zuben_state",JSON.stringify(state)); }catch(e){} }
+
+// 推送到 Gist（本地状态为准）
+function pushGist(){
+  if(!TOKEN||!GIST_ID) return Promise.resolve(false);
+  return fetch(GH_API+"/gists/"+GIST_ID,{
+    method:"PATCH",
+    headers:ghHeaders({"Content-Type":"application/json"}),
+    body:JSON.stringify({ files:{ [GIST_FILE]:{ content:JSON.stringify(state) } } })
+  }).then(r=>{ if(!r.ok) throw new Error("推送失败 "+r.status); return true; })
+    .catch(e=>{ setSync("err",e.message); throw e; });
+}
+// 从 Gist 拉取并与本地合并（已完成不可逆，取 OR）
+function pullGist(){
+  if(!TOKEN||!GIST_ID) return Promise.resolve();
+  return fetch(GH_API+"/gists/"+GIST_ID,{ headers:ghHeaders() })
+    .then(r=>{ if(!r.ok) throw new Error("拉取失败 "+r.status); return r.json(); })
+    .then(d=>{
+      const txt=d.files&&d.files[GIST_FILE]&&d.files[GIST_FILE].content;
+      if(!txt) return;
+      let remote={}; try{ remote=JSON.parse(txt)||{}; }catch(e){ return; }
+      Object.keys(remote).forEach(k=>{ if(remote[k]&&!state[k]){ state[k]=true; } });
+      saveLocal();
+    });
+}
+// 防抖保存：本地即时存 + 稍后推云端
+function save(){
+  saveLocal();
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    if(!TOKEN||!GIST_ID) return;
+    setSync("busy","同步中…");
+    pushGist().then(()=>setSync("ok")).catch(()=>{});
+  },800);
+}
+function isDone(id){return !!state[id];}
+
+let activeId="base";
+let activeSub=-1; // 短视频文案库下的品类索引
+let onlyUndone=false; // 只看未完成筛选
+
+/* ===== 各 section 的条目 id 列表 ===== */
+function idsOf(sec){
+  const ids=[];
+  if(sec.timeline){sec.timeline.forEach(t=>t.items.forEach((_,i)=>ids.push(`${sec.id}_${t.m}_${i}`)));}
+  else if(sec.cats){sec.cats.forEach(cat=>cat.items.forEach((_,i)=>ids.push(`${sec.id}_${cat.name}_${i}`)));}
+  else if(sec.resources){sec.resources.forEach((_,i)=>ids.push(`${sec.id}_res_${i}`));}
+  else{sec.items.forEach((_,i)=>ids.push(`${sec.id}_${i}`));if(sec.livescripts)sec.livescripts.forEach((_,i)=>ids.push(`${sec.id}_话术_${i}`));}
+  return ids;
+}
+function allIds(){let a=[];SECTIONS.forEach(s=>a=a.concat(idsOf(s)));return a;}
+
+/* ===== 渲染：左侧导航 ===== */
+function renderNav(){
+  const nav=document.getElementById("nav");
+  let html="";
+  SECTIONS.forEach(sec=>{
+    const ids=idsOf(sec);
+    const done=ids.filter(id=>state[id]).length;
+    const active=sec.id===activeId?" active":"";
+    html+=`<div class="nav-item${active}" data-id="${sec.id}">
+      <span class="ico">${ICONS[sec.id]||"📌"}</span>
+      <span class="lbl">${sec.title}</span>
+      <span class="lbls">${SHORT[sec.id]||sec.title}</span>
+      <span class="cnt">${done}/${ids.length}</span>
+    </div>`;
+    // 短视频文案库：展开 4 个品类作为子导航
+    if(sec.id==="copy" && sec.id===activeId){
+      sec.cats.forEach((cat,ci)=>{
+        const cids=cat.items.map((_,i)=>`${sec.id}_${cat.name}_${i}`);
+        const cd=cids.filter(id=>state[id]).length;
+        const sa=ci===activeSub?" active":"";
+        html+=`<div class="subnav"><div class="sub-item${sa}" data-cat="${ci}">
+          <span class="dot"></span><span>${cat.name.split("（")[0]}</span><span class="scnt">${cd}/${cids.length}</span>
+        </div></div>`;
+      });
+    }
+  });
+  nav.innerHTML=html;
+  nav.querySelectorAll(".nav-item").forEach(el=>{
+    el.addEventListener("click",()=>{activeId=el.dataset.id;activeSub=-1;render();});
+  });
+  nav.querySelectorAll(".sub-item").forEach(el=>{
+    el.addEventListener("click",e=>{
+      e.stopPropagation();
+      activeSub=parseInt(el.dataset.cat);
+      renderNav();renderContent();
+      const t=document.getElementById("cat_"+activeSub);
+      if(t) t.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  });
+}
+
+/* ===== 渲染：右侧内容（仅当前 section） ===== */
+function plainItem(id,text){
+  const done=isDone(id)?" done":"";
+  return `<div class="item${done}" data-id="${id}"><span class="box"></span><span class="txt">${text}</span></div>`;
+}
+function copyItem(id,obj){
+  const done=isDone(id)?" done":"";
+  return `<div class="item${done}" data-id="${id}"><span class="box"></span><span class="txt">${obj.t}</span><button class="scbtn" data-scr="scr_${id}">脚本 ▾</button></div>
+  <div class="script" id="scr_${id}" hidden>
+    <span class="du">${obj.dur}</span>
+    <div><b>钩子（前3-5秒）：</b>${obj.hook}</div>
+    <div style="margin-top:6px"><b>正文旁白（约20-30秒）：</b>${obj.body}</div>
+    <div class="vi" style="margin-top:6px"><b>画面：</b>${obj.vis}</div>
+  </div>`;
+}
+function resItem(id,obj){
+  const done=isDone(id)?" done":"";
+  return `<div class="item${done}" data-id="${id}"><span class="box"></span><span class="txt">${obj.name}　<span style="color:var(--muted);font-size:12px">${obj.cat||""}</span></span><button class="scbtn" data-scr="scr_${id}">详情 ▾</button></div>
+  <div class="script" id="scr_${id}" hidden>
+    <div><b>地址：</b>${obj.addr||"—"}</div>
+    <div style="margin-top:5px"><b>电话：</b>${obj.phone||"—"}</div>
+    <div style="margin-top:5px"><b>规模：</b>${obj.scale||"—"}</div>
+    <div style="margin-top:5px"><b>报价：</b>${obj.quote||"—"}</div>
+    ${obj.note?`<div class="vi" style="margin-top:5px"><b>备注：</b>${obj.note}</div>`:""}
+  </div>`;
+}
+function renderContent(){
+  const sec=SECTIONS.find(s=>s.id===activeId);
+  const panel=document.getElementById("panel");
+  if(!sec){panel.innerHTML="";return;}
+  let body="";
+  if(sec.note) body+=`<div class="note">${sec.note}</div>`;
+  if(sec.timeline){
+    sec.timeline.forEach(t=>{
+      body+=`<div class="month">${t.m}</div>`;
+      t.items.forEach((it,i)=>{body+=plainItem(`${sec.id}_${t.m}_${i}`,it);});
+    });
+  } else if(sec.cats){
+    sec.cats.forEach((cat,ci)=>{
+      body+=`<div class="cat-h" id="cat_${ci}">${cat.name}（${cat.items.length}条）</div>`;
+      cat.items.forEach((o,i)=>{body+=copyItem(`${sec.id}_${cat.name}_${i}`,o);});
+    });
+  } else if(sec.resources){
+    sec.resources.forEach((o,i)=>{body+=resItem(`${sec.id}_res_${i}`,o);});
+  } else {
+    sec.items.forEach((it,i)=>{body+=plainItem(`${sec.id}_${i}`,it);});
+    if(sec.livescripts){
+      body+=`<div class="cat-h">直播话术脚本（点击「脚本」展开，可照着念）</div>`;
+      sec.livescripts.forEach((o,i)=>{body+=copyItem(`${sec.id}_话术_${i}`,o);});
+    }
+  }
+  const ids=idsOf(sec);
+  const done=ids.filter(id=>state[id]).length;
+  panel.innerHTML=`<div class="sec" id="sec_${sec.id}">
+    <h2>${ICONS[sec.id]||"📌"} ${sec.title}<span class="tag">${sec.tag}</span><span class="pro">${done}/${ids.length}</span></h2>
+    <div class="body">${body}</div></div>`;
+  bindContent();
+}
+
+function bindContent(){
+  document.querySelectorAll("#panel .item").forEach(el=>{
+    el.addEventListener("click",e=>{
+      if(e.target.classList.contains("scbtn")) return;
+      const id=el.dataset.id;
+      state[id]=!state[id];
+      el.classList.toggle("done",!!state[id]);
+      save();updateProgress();
+    });
+  });
+  document.querySelectorAll("#panel .scbtn").forEach(b=>{
+    b.addEventListener("click",e=>{
+      e.stopPropagation();
+      const d=document.getElementById(b.dataset.scr);
+      if(d){d.hidden=!d.hidden;b.textContent=d.hidden?"脚本 ▾":"收起 ▴";}
+    });
+  });
+}
+
+/* ===== 进度更新（顶部总进度 + 导航计数） ===== */
+function updateProgress(){
+  const ids=allIds();
+  const total=ids.length;
+  const done=ids.filter(id=>state[id]).length;
+  document.getElementById("barFill").style.width=(total?done/total*100:0)+"%";
+  document.getElementById("barTxt").textContent=`已完成 ${done} / ${total}`;
+  // 刷新导航上的计数
+  SECTIONS.forEach(sec=>{
+    const navEl=document.querySelector(`.nav-item[data-id="${sec.id}"] .cnt`);
+    const si=idsOf(sec);
+    if(navEl) navEl.textContent=`${si.filter(id=>state[id]).length}/${si.length}`;
+  });
+  // 当前内容区的头部计数
+  const sec=SECTIONS.find(s=>s.id===activeId);
+  if(sec){
+    const pro=document.querySelector(".sec .pro");
+    const si=idsOf(sec);
+    if(pro) pro.textContent=`${si.filter(id=>state[id]).length}/${si.length}`;
+  }
+}
+
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("确定重置所有完成进度？")){state={};save();activeSub=-1;render();}
+};
+
+function render(){
+  renderNav();
+  renderContent();
+  document.getElementById("panel").classList.toggle("hide-done",onlyUndone);
+  updateProgress();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+/* ===== 工具：日期串 ===== */
+function dateStr(){const d=new Date();return d.getFullYear()+("0"+(d.getMonth()+1)).slice(-2)+("0"+d.getDate()).slice(-2);}
+
+/* ===== 导出：文本（已完成清单） ===== */
+function exportTxt(){
+  let lines=["🧦 天猫袜子店 · 运营 TODO 完成清单","生成时间："+new Date().toLocaleString(),""];
+  SECTIONS.forEach(sec=>{
+    let any=false;const blk=["【"+sec.title+"】"];
+    if(sec.timeline){sec.timeline.forEach(t=>{t.items.forEach((it,i)=>{if(state[sec.id+"_"+t.m+"_"+i]){blk.push("  ✓ "+it);any=true;}});});}
+    else if(sec.cats){sec.cats.forEach(cat=>{cat.items.forEach((o,i)=>{if(state[sec.id+"_"+cat.name+"_"+i]){blk.push("  ✓ "+o.t);any=true;}});});}
+    else if(sec.resources){
+      sec.resources.forEach((o,i)=>{if(state[sec.id+"_res_"+i]){blk.push("  ✓ "+o.name+"｜"+o.cat);any=true;}});
+    } else{
+      sec.items.forEach((it,i)=>{if(state[sec.id+"_"+i]){blk.push("  ✓ "+it);any=true;}});
+      if(sec.livescripts)sec.livescripts.forEach((o,i)=>{if(state[sec.id+"_话术_"+i]){blk.push("  ✓ "+o.t);any=true;}});
+    }
+    if(any){lines=lines.concat(blk,"");}
+  });
+  const ids=allIds();const total=ids.length;const done=ids.filter(id=>state[id]).length;
+  lines.unshift("总计完成 "+done+" / "+total);
+  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="袜子店TODO_已完成_"+dateStr()+".txt";a.click();
+}
+
+/* ===== 导出：图片（进度卡片） ===== */
+function exportImg(){
+  const ids=allIds();const total=ids.length;const done=ids.filter(id=>state[id]).length;
+  const c=document.createElement("canvas");c.width=760;c.height=120+SECTIONS.length*60+30;
+  const x=c.getContext("2d");
+  x.fillStyle="#ffffff";x.fillRect(0,0,c.width,c.height);
+  x.fillStyle="#e8704a";x.fillRect(0,0,c.width,70);
+  x.fillStyle="#fff";x.font="bold 22px sans-serif";x.fillText("🧦 袜子店运营 TODO · 完成进度",24,44);
+  x.font="13px sans-serif";x.fillStyle="#fff";x.fillText(new Date().toLocaleDateString(),610,44);
+  x.fillStyle="#1f2933";x.font="bold 16px sans-serif";x.fillText("总进度  "+done+" / "+total,24,108);
+  x.fillStyle="#eef2f7";x.fillRect(160,96,560,16);
+  x.fillStyle="#2f9e6f";x.fillRect(160,96,560*(total?done/total:0),16);
+  let y=150;
+  SECTIONS.forEach(sec=>{
+    const si=idsOf(sec);const sd=si.filter(id=>state[id]).length;
+    x.fillStyle="#1f2933";x.font="15px sans-serif";
+    x.fillText((ICONS[sec.id]||"📌")+" "+sec.title,24,y);
+    x.fillStyle="#6b7785";x.font="14px sans-serif";x.fillText(sd+" / "+si.length,620,y);
+    x.fillStyle="#eef2f7";x.fillRect(24,y+12,640,8);
+    x.fillStyle="#e8704a";x.fillRect(24,y+12,640*(si.length?sd/si.length:0),8);
+    y+=60;
+  });
+  const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="袜子店TODO进度_"+dateStr()+".png";a.click();
+}
+
+document.getElementById("onlyUndone").addEventListener("change",e=>{onlyUndone=e.target.checked;document.getElementById("panel").classList.toggle("hide-done",onlyUndone);});
+document.getElementById("exportImg").addEventListener("click",exportImg);
+document.getElementById("exportTxt").addEventListener("click",exportTxt);
+
+/* ===== GitHub 同步登录（跨电脑自动同步，数据存私有 Gist） ===== */
+function showLogin(){ const m=document.getElementById("main"); if(m)m.hidden=true; const l=document.getElementById("login"); if(l)l.hidden=false; }
+function showApp(){ const l=document.getElementById("login"); if(l)l.hidden=true; const m=document.getElementById("main"); if(m)m.hidden=false; }
+function setSync(status,msg){
+  const dot=document.getElementById("syncDot"), txt=document.getElementById("syncTxt");
+  if(dot) dot.className="dot"+(status?" "+status:"");
+  if(txt) txt.textContent=msg||({ok:"已同步",busy:"同步中…",err:"同步失败"}[status]||"未同步");
+}
+function verifyToken(tok){
+  return fetch(GH_API+"/user",{ headers:{"Authorization":"Bearer "+tok,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"} })
+    .then(r=>{ if(!r.ok) throw new Error(r.status===401?"Token 无效或无 gist 权限":("验证失败 "+r.status)); return r.json(); });
+}
+function findGist(){
+  return fetch(GH_API+"/gists?per_page=100",{ headers:ghHeaders() })
+    .then(r=>{ if(!r.ok) throw new Error("获取Gist失败 "+r.status); return r.json(); })
+    .then(list=>{ const g=list.find(x=>x.description===GIST_DESC); return g?g.id:null; });
+}
+function createGist(){
+  return fetch(GH_API+"/gists",{
+    method:"POST",
+    headers:ghHeaders({"Content-Type":"application/json"}),
+    body:JSON.stringify({ description:GIST_DESC, public:false, files:{ [GIST_FILE]:{ content:JSON.stringify(state) } } })
+  }).then(r=>{ if(!r.ok) throw new Error("创建Gist失败 "+r.status); return r.json(); })
+    .then(d=>d.id);
+}
+function doLogin(tok){
+  const msg=document.getElementById("loginMsg"); msg.textContent="验证 Token 中…";
+  TOKEN=tok.trim();
+  verifyToken(TOKEN).then(()=>{
+    msg.textContent="查找同步仓库…";
+    return findGist();
+  }).then(id=>{
+    if(id){ GIST_ID=id; }
+    else { msg.textContent="创建同步仓库…"; return createGist().then(nid=>{ GIST_ID=nid; }); }
+  }).then(()=>{
+    try{ localStorage.setItem("zuben_token",TOKEN); localStorage.setItem("zuben_gist",GIST_ID); }catch(e){}
+    msg.textContent="";
+    setSync("busy","同步中…");
+    return pullGist().then(()=>{ saveLocal(); render(); setSync("ok"); });
+  }).then(()=>{ showApp(); })
+    .catch(err=>{ msg.textContent="登录失败："+(err.message||err); TOKEN=null; });
+}
+
+function initGitHub(){
+  loadLocal();
+  const form=document.getElementById("loginForm");
+  form.addEventListener("submit",e=>{
+    e.preventDefault();
+    const tok=document.getElementById("token").value.trim();
+    if(!tok){ document.getElementById("loginMsg").textContent="请输入 Token"; return; }
+    doLogin(tok);
+  });
+  const lb=document.getElementById("logoutBtn");
+  if(lb) lb.onclick=()=>{
+    TOKEN=null; GIST_ID=null;
+    try{ localStorage.removeItem("zuben_token"); localStorage.removeItem("zuben_gist"); }catch(e){}
+    setSync(""); showLogin();
+  };
+  const sb=document.getElementById("syncBtn");
+  if(sb) sb.onclick=()=>{
+    if(!TOKEN||!GIST_ID){ setSync("err","请先登录"); return; }
+    setSync("busy","同步中…");
+    pullGist().then(()=>{ render(); return pushGist(); }).then(()=>setSync("ok")).catch(()=>{});
+  };
+  if(TOKEN&&GIST_ID){
+    setSync("busy","同步中…");
+    pullGist().then(()=>{ saveLocal(); render(); setSync("ok"); showApp(); })
+      .catch(()=>{ setSync("err","同步失败，请重新登录"); showLogin(); });
+  } else {
+    showLogin();
+  }
+}
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+}
+initGitHub();
+</script>
+</body>
+</html>
