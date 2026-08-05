@@ -84,25 +84,32 @@
   .item.done .txt{color:var(--muted);text-decoration:line-through;}
   #panel.hide-done .item.done{display:none;}
   #panel.hide-done .script{display:none;}
-  /* ===== 投入金额板块 ===== */
-  .funds{display:flex;flex-direction:column;gap:10px;margin:4px 0 8px;}
-  .fund-row{display:flex;align-items:center;gap:12px;background:#FFFDF8;border:1px solid var(--line);
-    border-radius:12px;padding:12px 14px;box-shadow:0 1px 3px rgba(74,64,54,.04);}
-  .fund-row .flbl{flex:1;min-width:0;}
-  .fund-row .flbl .lname{font-size:14px;font-weight:600;color:var(--ink);display:block;margin-bottom:2px;}
-  .fund-row .flbl .lhint{font-size:11.5px;color:var(--muted);line-height:1.4;}
-  .fund-row .finput{display:flex;align-items:center;background:#F6ECDD;border:1.5px solid var(--brand2);
-    border-radius:10px;padding:0 10px;min-width:130px;height:40px;}
+  /* ===== 投入金额板块（明细账本） ===== */
+  .funds{display:flex;flex-direction:column;gap:14px;margin:4px 0 8px;}
+  .fund-cat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px 14px;box-shadow:0 1px 3px rgba(74,64,54,.04);}
+  .fund-cat-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+  .fch-l{flex:1;min-width:0;}
+  .fch-l .lname{font-size:14.5px;font-weight:700;color:var(--ink);display:block;margin-bottom:2px;}
+  .fch-l .lhint{font-size:11.5px;color:var(--muted);line-height:1.4;display:block;}
+  .cat-sub{flex:0 0 auto;font-size:13.5px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;background:#F6ECDD;border-radius:8px;padding:4px 10px;white-space:nowrap;}
+  .fund-row{display:flex;align-items:center;gap:8px;margin:8px 0;}
+  .fund-row .enote{flex:1;min-width:0;height:40px;border:1px solid var(--line);background:#FBF7EF;border-radius:9px;padding:0 10px;font-size:13px;color:var(--ink);font-family:inherit;outline:0;}
+  .fund-row .enote:focus{border-color:var(--brand2);background:#FFF6E7;}
+  .fund-row .finput{display:flex;align-items:center;background:#F6ECDD;border:1.5px solid var(--brand2);border-radius:10px;padding:0 10px;min-width:108px;height:40px;}
   .fund-row .finput:focus-within{border-color:var(--brand);background:#FFF6E7;}
   .fund-row .finput .yen{font-weight:700;color:var(--brand);margin-right:4px;font-size:14px;}
-  .fund-row .finput input{border:0;background:transparent;outline:0;width:100%;font-size:15px;
-    font-weight:600;color:var(--ink);font-family:inherit;-moz-appearance:textfield;}
+  .fund-row .finput input{border:0;background:transparent;outline:0;width:100%;font-size:15px;font-weight:600;color:var(--ink);font-family:inherit;-moz-appearance:textfield;}
   .fund-row .finput input::-webkit-outer-spin-button,
   .fund-row .finput input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .fund-row .fdel{flex:0 0 auto;width:30px;height:30px;border:none;border-radius:50%;background:#F3E3DC;color:#C0735A;font-size:13px;cursor:pointer;line-height:1;}
+  .fund-row .fdel:active{transform:scale(.9);}
+  .fadd{display:block;width:100%;margin-top:6px;height:38px;border:1.5px dashed var(--brand2);background:transparent;color:var(--brand);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .fadd:active{background:#FBF1E0;}
   .fund-total{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:14px 16px;
     background:linear-gradient(135deg,#F6ECDD,#EAD7B8);border-radius:12px;border:1.5px dashed var(--brand2);}
   .fund-total .tname{font-size:13px;color:var(--ink);font-weight:600;}
   .fund-total .tamt{font-size:20px;font-weight:700;color:var(--brand);font-variant-numeric:tabular-nums;}
+  .fund-empty{font-size:12px;color:var(--muted);padding:4px 2px 2px;font-style:italic;}
   .scbtn{flex:0 0 auto;font-size:11px;color:var(--blue);background:var(--chip);border:none;border-radius:6px;padding:3px 8px;cursor:pointer;margin-top:1px;transition:.15s;}
   .scbtn:hover{background:#EADFCB;}
   .script{background:#FBF7EF;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin:4px 4px 10px 32px;font-size:13px;}
@@ -184,9 +191,13 @@
     .month{font-size:13.5px;margin:12px 0 6px;}
     .script{margin:4px 4px 10px 24px;font-size:12.5px;padding:10px 12px;}
     .note{font-size:12px;padding:7px 10px;margin:10px 0 12px;}
-    .fund-row{padding:10px 12px;gap:10px;}
-    .fund-row .flbl .lname{font-size:13.5px;}
-    .fund-row .finput{min-width:108px;height:38px;}
+    .fund-cat{padding:10px 11px 12px;}
+    .fch-l .lname{font-size:13.5px;}
+    .fund-row{gap:6px;}
+    .fund-row .enote{height:36px;font-size:12.5px;}
+    .fund-row .finput{min-width:92px;height:36px;}
+    .fund-row .fdel{width:28px;height:28px;}
+    .fadd{height:34px;font-size:12.5px;}
     .fund-total{padding:12px 14px;}
     .fund-total .tamt{font-size:18px;}
     .foot{font-size:11px;padding:0 0 calc(10px + env(safe-area-inset-bottom));}
@@ -535,6 +546,7 @@ function ghHeaders(extra){ return Object.assign({"Authorization":"Bearer "+TOKEN
 function loadLocal(){
   try{ state=JSON.parse(localStorage.getItem("zuben_state")||"{}"); if(!state||typeof state!=="object"||Array.isArray(state)) state={}; }catch(e){ state={}; }
   if(!state.cost||typeof state.cost!=="object") state.cost={};
+  normalizeCost();
   try{ TOKEN=localStorage.getItem("zuben_token")||null; }catch(e){}
   try{ GIST_ID=localStorage.getItem("zuben_gist")||null; }catch(e){}
 }
@@ -678,7 +690,7 @@ function renderContent(){
   } else if(sec.resources){
     sec.resources.forEach((o,i)=>{body+=resItem(`${sec.id}_res_${i}`,o);});
   } else if(sec.money){
-    if(!state.cost||typeof state.cost!=="object") state.cost={};
+    normalizeCost();
     body+=renderMoney(sec);
   } else {
     sec.items.forEach((it,i)=>{body+=plainItem(`${sec.id}_${i}`,it);});
@@ -697,54 +709,118 @@ function renderContent(){
   if(sec.money) bindMoney();
 }
 
-/* ===== 投入金额 ===== */
+/* ===== 投入金额（明细账本） ===== */
+function escapeAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function catTotal(arr){ return (Array.isArray(arr)?arr:[]).reduce((s,e)=>s+(Number(e&&e.amt)||0),0); }
 function totalOf(sec){
   if(!sec||!sec.funds) return 0;
   let t=0;
-  sec.funds.forEach(f=>{ t+=Number((state.cost&&state.cost[f.key])||0)||0; });
+  sec.funds.forEach(f=>{ t+=catTotal(state.cost&&state.cost[f.key]); });
   return t;
 }
 function fmtMoney(n){
   n=Number(n)||0;
   return n.toLocaleString("zh-CN",{maximumFractionDigits:2});
 }
+// 数据归一：把旧版「单数字」升级成「明细数组」，并补齐缺省类目
+function normalizeCost(){
+  if(!state.cost||typeof state.cost!=="object") state.cost={};
+  const sec=SECTIONS.find(s=>s.id==="cost");
+  (sec?sec.funds:[]).forEach(f=>{
+    const v=state.cost[f.key];
+    if(Array.isArray(v)){ /* 已是明细数组 */ }
+    else if(typeof v==="number"){ state.cost[f.key]= v? [{note:"",amt:v}] : []; }
+    else { state.cost[f.key]=[]; }
+  });
+}
 function renderMoney(sec){
   let html='<div class="funds">';
   sec.funds.forEach(f=>{
-    const v=Number((state.cost&&state.cost[f.key])||0)||0;
-    html+=`<div class="fund-row">
-      <div class="flbl">
-        <span class="lname">${f.label}</span>
-        <span class="lhint">${f.hint}</span>
-      </div>
-      <div class="finput">
-        <span class="yen">¥</span>
-        <input type="number" min="0" step="0.01" inputmode="decimal" data-key="${f.key}" value="${v||""}" placeholder="0">
-      </div>
-    </div>`;
+    const arr=(state.cost&&state.cost[f.key])||[];
+    html+=`<div class="fund-cat" data-key="${f.key}">
+      <div class="fund-cat-head">
+        <div class="fch-l"><span class="lname">${f.label}</span><span class="lhint">${f.hint}</span></div>
+        <span class="cat-sub" data-key="${f.key}">¥${fmtMoney(catTotal(arr))}</span>
+      </div>`;
+    if(arr.length===0){
+      html+=`<div class="fund-empty">还没有登记，点下面「＋ 添加一笔」</div>`;
+    }
+    arr.forEach((e,idx)=>{
+      html+=`<div class="fund-row">
+        <input class="enote" type="text" data-key="${f.key}" data-idx="${idx}" data-field="note" value="${escapeAttr(e.note)}" placeholder="备注，如：直通车">
+        <div class="finput">
+          <span class="yen">¥</span>
+          <input class="eamt" type="number" min="0" step="0.01" inputmode="decimal" data-key="${f.key}" data-idx="${idx}" data-field="amt" value="${(Number(e.amt)||0)||""}" placeholder="0">
+        </div>
+        <button class="fdel" data-key="${f.key}" data-idx="${idx}" title="删除这笔" aria-label="删除">✕</button>
+      </div>`;
+    });
+    html+=`<button class="fadd" data-key="${f.key}">＋ 添加一笔</button>`;
+    html+=`</div>`;
   });
   html+=`<div class="fund-total"><span class="tname">合计投入</span><span class="tamt">¥${fmtMoney(totalOf(sec))}</span></div>`;
   html+='</div>';
   return html;
 }
+// 仅重渲染金额区（增删后调用，保留其他 UI 与滚动位置）
+function renderMoneySection(){
+  const sec=SECTIONS.find(s=>s.id===activeId);
+  const fundsEl=document.querySelector("#panel .funds");
+  if(sec && fundsEl){
+    const panelEl=document.getElementById("panel");
+    const sc=panelEl.scrollTop;
+    fundsEl.outerHTML=renderMoney(sec);
+    bindMoney();
+    panelEl.scrollTop=sc;
+    updateProgress();
+  }
+}
 function bindMoney(){
+  const sec=SECTIONS.find(s=>s.id===activeId);
+  // 明细输入（备注 / 金额）—— 实时更新，不重渲染，保留输入焦点
   document.querySelectorAll("#panel .fund-row input").forEach(inp=>{
     inp.addEventListener("input",()=>{
-      if(!state.cost||typeof state.cost!=="object") state.cost={};
-      const k=inp.dataset.key;
-      const v=parseFloat(inp.value);
-      state.cost[k]=isNaN(v)?0:v;
-      // 实时刷新合计行 + 导航 + 顶部进度
-      const sec=SECTIONS.find(s=>s.id===activeId);
-      if(sec){
-        const tot=document.querySelector(".fund-total .tamt");
-        if(tot) tot.textContent="¥"+fmtMoney(totalOf(sec));
-      }
+      normalizeCost();
+      const k=inp.dataset.key, idx=+inp.dataset.idx, field=inp.dataset.field;
+      const arr=state.cost[k]||[];
+      if(!arr[idx]) arr[idx]={note:"",amt:0};
+      if(field==="amt"){ arr[idx].amt=parseFloat(inp.value)||0; }
+      else { arr[idx].note=inp.value; }
+      const sub=document.querySelector(`.cat-sub[data-key="${k}"]`);
+      if(sub) sub.textContent="¥"+fmtMoney(catTotal(arr));
+      const tot=document.querySelector(".fund-total .tamt");
+      if(tot) tot.textContent="¥"+fmtMoney(totalOf(sec));
       const pro=document.querySelector(".sec .pro");
       if(pro) pro.textContent="¥"+fmtMoney(totalOf(sec));
       const navEl=document.querySelector(`.nav-item[data-id="${activeId}"] .cnt`);
       if(navEl) navEl.textContent="¥"+fmtMoney(totalOf(sec));
       save();
+    });
+  });
+  // 删除一笔
+  document.querySelectorAll("#panel .fdel").forEach(btn=>{
+    btn.addEventListener("click",e=>{
+      e.stopPropagation();
+      normalizeCost();
+      const k=btn.dataset.key, idx=+btn.dataset.idx;
+      if(state.cost[k]) state.cost[k].splice(idx,1);
+      renderMoneySection();
+      save();
+    });
+  });
+  // 添加一笔
+  document.querySelectorAll("#panel .fadd").forEach(btn=>{
+    btn.addEventListener("click",e=>{
+      e.stopPropagation();
+      normalizeCost();
+      const k=btn.dataset.key;
+      if(!state.cost[k]) state.cost[k]=[];
+      state.cost[k].push({note:"",amt:0});
+      renderMoneySection();
+      save();
+      const arr=state.cost[k];
+      const lastNote=document.querySelector(`#panel .enote[data-key="${k}"][data-idx="${arr.length-1}"]`);
+      if(lastNote) lastNote.focus();
     });
   });
 }
@@ -822,7 +898,13 @@ function exportTxt(){
     else if(sec.resources){
       sec.resources.forEach((o,i)=>{if(state[sec.id+"_res_"+i]){blk.push("  ✓ "+o.name+"｜"+o.cat);any=true;}});
     } else if(sec.money){
-      sec.funds.forEach(f=>{ blk.push("  "+f.label+"：¥"+fmtMoney((state.cost&&state.cost[f.key])||0)); });
+      normalizeCost();
+      sec.funds.forEach(f=>{
+        const arr=(state.cost&&state.cost[f.key])||[];
+        blk.push("  "+f.label+"（小计 ¥"+fmtMoney(catTotal(arr))+"）：");
+        if(arr.length===0){ blk.push("    （暂无登记）"); }
+        else { arr.forEach(e=>{ blk.push("    · "+(e.note||"未命名")+"：¥"+fmtMoney(e.amt)); }); }
+      });
       blk.push("  ———————————");
       blk.push("  合计：¥"+fmtMoney(totalOf(sec)));
       any=true;
